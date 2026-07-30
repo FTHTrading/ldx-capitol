@@ -1,15 +1,16 @@
 /* LDX Capital PWA service worker — offline-first shell */
-const CACHE = 'ldx-app-v1';
+const CACHE = 'ldx-app-v2';
 const ASSETS = [
   './',
   './index.html',
   './app.css',
   './app.js',
   './manifest.webmanifest',
-  '../icons/ldx-mark.svg',
+  '../brand/fth-logo-nav.png',
   '../icons/icon-192.png',
   '../icons/icon-512.png',
-  '../icons/apple-touch-icon.png'
+  '../icons/apple-touch-icon.png',
+  '../icons/favicon-64.png'
 ];
 
 self.addEventListener('install', (e) => {

@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LDX Capital — Commercial Lending, Every Rail</title>
 <meta name="description" content="LDX Capital: institutional commercial real estate lending across traditional and tokenized capital markets. Permanent, Bridge, Construction, Mezzanine, C-PACE, SBA 7(a).">
-<link rel="icon" type="image/svg+xml" href="icons/ldx-mark.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="theme-color" content="#1f3864">
 <meta property="og:title" content="LDX Capital — Commercial Lending, Every Rail">
@@ -36,8 +37,10 @@
   .navin a:hover{color:var(--navy)}
   .navin .cta{margin-left:auto;background:var(--navy);color:#fff;padding:9px 20px;border-radius:99px}
   .navin .cta:hover{background:var(--navy-d);color:#fff}
-  .logo-lockup{display:flex;align-items:center;gap:10px;text-decoration:none!important;margin-right:8px}
-  .logo-word{font-family:Georgia,serif;font-size:22px;font-weight:700;letter-spacing:.06em;color:var(--navy)}
+  .logo-lockup{display:flex;align-items:center;gap:12px;text-decoration:none!important;margin-right:8px}
+  .logo-lockup img{height:38px;width:auto;display:block}
+  .logo-word{font-family:Georgia,serif;font-size:20px;font-weight:700;letter-spacing:.06em;color:var(--navy);line-height:1}
+  .logo-word small{display:block;font-family:'Segoe UI',Helvetica,sans-serif;font-size:9.5px;font-weight:600;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:3px}
   .logo-word .x{color:var(--accent)}
   .logo-word sup{font-size:8px;color:var(--muted)}
 
@@ -143,17 +146,9 @@
 
 <!-- ================= NAV ================= -->
 <nav><div class="wrap navin">
-  <a class="logo-lockup" href="#top">
-    <svg width="34" height="34" viewBox="0 0 44 44"><g fill="none" stroke-linecap="butt">
-      <path d="M19 6 L6 38" stroke="#1f3864" stroke-width="5"/>
-      <path d="M24.5 9.5 L14 38" stroke="#1f3864" stroke-width="3.2"/>
-      <path d="M23 5 L38 30" stroke="#7ea6d8" stroke-width="5"/>
-      <path d="M28.5 8.5 L40 28.5" stroke="#7ea6d8" stroke-width="3.2"/>
-      <path d="M14 33.5 H40" stroke="#1f3864" stroke-width="4.4"/>
-      <path d="M11 39 H37.5" stroke="#1f3864" stroke-width="4.4"/>
-      <circle cx="22" cy="24.5" r="3.4" fill="#2a78d6"/>
-    </g></svg>
-    <span class="logo-word">LD<span class="x">X</span> CAPITAL<sup>™</sup></span>
+  <a class="logo-lockup" href="#top" aria-label="LDX Capital — an FTH Trading division">
+    <img src="brand/fth-logo-nav.png" alt="FTH Trading" width="76" height="38">
+    <span class="logo-word">LD<span class="x">X</span> CAPITAL<sup>™</sup><small>An FTH Trading Company</small></span>
   </a>
   <a href="#programs">Loan Programs</a>
   <a href="#rails">Digital Capital</a>
@@ -317,8 +312,10 @@
 <footer><div class="wrap">
   <div class="cols">
     <div>
-      <div class="logo-word" style="color:#fff;font-size:19px;margin-bottom:10px">LD<span class="x" style="color:var(--sky)">X</span> CAPITAL<sup style="color:#7288ad">™</sup></div>
-      <p style="font-size:12.5px;line-height:1.7">Institutional commercial real estate credit across traditional and tokenized capital markets. Qualified custody at BitGo Bank &amp; Trust, N.A. Pool infrastructure built for Centrifuge. Technology by Unykorn.</p>
+      <img src="brand/fth-logo-footer.png" alt="FTH Trading" style="height:44px;width:auto;display:block;margin-bottom:12px">
+      <div class="logo-word" style="color:#fff;font-size:19px;margin-bottom:6px;line-height:1">LD<span class="x" style="color:var(--sky)">X</span> CAPITAL<sup style="color:#7288ad">™</sup></div>
+      <div style="font-family:'Segoe UI',Helvetica,sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.14em;color:#7288ad;text-transform:uppercase;margin-bottom:12px">An FTH Trading Company</div>
+      <p style="font-size:12.5px;line-height:1.7">Institutional commercial real estate credit across traditional and tokenized capital markets. Qualified custody at BitGo Bank &amp; Trust, N.A. Pool infrastructure built for Centrifuge.</p>
     </div>
     <div><h5>Programs</h5><a href="#programs">Permanent</a><a href="#programs">Bridge</a><a href="#programs">Construction</a><a href="#programs">Mezzanine</a><a href="#programs">C-PACE</a><a href="#programs">SBA 7(a)</a></div>
     <div><h5>Digital</h5><a href="#rails">How It Works</a><a href="#tokenization">Tokenization</a><a href="#tokenization">Stablecoin Rails</a><a href="#blog">Insights</a></div>

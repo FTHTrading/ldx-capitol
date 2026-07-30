@@ -15,7 +15,8 @@ input,select,textarea,button{font-family:inherit;font-size:14px}
 
 /* topbar */
 .topbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:10px 16px}
-.brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--navy);font-family:Georgia,serif;font-weight:700;font-size:16px;letter-spacing:.06em}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--navy);font-family:Georgia,serif;font-weight:700;font-size:16px;letter-spacing:.06em}
+.brand img{height:30px;width:auto;display:block}
 .brand em{color:var(--accent);font-style:normal}
 .topbar nav{display:flex;gap:4px;margin-left:auto;overflow-x:auto;flex-wrap:nowrap;max-width:100%;-webkit-overflow-scrolling:touch}
 .topbar nav button{background:transparent;border:none;padding:9px 13px;border-radius:8px;font-size:13px;color:var(--ink2);font-weight:600;cursor:pointer;white-space:nowrap}
