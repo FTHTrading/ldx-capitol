@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LDX Capital — Commercial Lending, Every Rail</title>
+<meta name="description" content="LDX Capital: institutional commercial real estate lending across traditional and tokenized capital markets. Permanent, Bridge, Construction, Mezzanine, C-PACE, SBA 7(a).">
+<link rel="icon" type="image/svg+xml" href="icons/ldx-mark.svg">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#1f3864">
+<meta property="og:title" content="LDX Capital — Commercial Lending, Every Rail">
+<meta property="og:description" content="Institutional CRE credit across traditional and tokenized capital markets. $1M–$50M. Six programs. Two channels.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fthtrading.github.io/ldx-capitol/">
+<style>
+  :root{
+    --navy:#1f3864; --navy-d:#142647; --navy-2:#16305f; --sky:#7ea6d8; --sky-l:#b8d0ec;
+    --ink:#17203a; --ink2:#4d5975; --muted:#8791a8; --bg:#ffffff; --bg2:#f5f7fb;
+    --gold:#c9a227; --accent:#2a78d6; --junior:#eb6834; --good:#1a8f66;
+    --border:#e2e7f0; --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Segoe UI',-apple-system,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6;font-size:15px}
+  .serif{font-family:Georgia,'Times New Roman',serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  section{padding:74px 0}
+  h2{font-family:Georgia,serif;font-size:32px;color:var(--navy);letter-spacing:-.01em;margin-bottom:10px}
+  .kicker{font-size:11.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .lead{font-size:16.5px;color:var(--ink2);max-width:720px}
+
+  /* ---------- nav ---------- */
+  nav{position:sticky;top:0;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);z-index:100}
+  .navin{display:flex;align-items:center;gap:26px;height:66px}
+  .navin a{color:var(--ink2);text-decoration:none;font-size:13.5px;font-weight:600}
+  .navin a:hover{color:var(--navy)}
+  .navin .cta{margin-left:auto;background:var(--navy);color:#fff;padding:9px 20px;border-radius:99px}
+  .navin .cta:hover{background:var(--navy-d);color:#fff}
+  .logo-lockup{display:flex;align-items:center;gap:10px;text-decoration:none!important;margin-right:8px}
+  .logo-word{font-family:Georgia,serif;font-size:22px;font-weight:700;letter-spacing:.06em;color:var(--navy)}
+  .logo-word .x{color:var(--accent)}
+  .logo-word sup{font-size:8px;color:var(--muted)}
+
+  /* ---------- hero ---------- */
+  .hero{background:linear-gradient(155deg,var(--navy-d) 0%,var(--navy) 48%,#2a5a9e 100%);color:#fff;padding:96px 0 84px;position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;right:-140px;top:-120px;width:560px;height:560px;background:radial-gradient(circle,rgba(126,166,216,.22),transparent 65%)}
+  .hero h1{font-family:Georgia,serif;font-size:46px;line-height:1.14;letter-spacing:-.015em;max-width:760px}
+  .hero h1 em{font-style:normal;color:var(--sky-l)}
+  .hero p{font-size:17.5px;color:#c8d7ee;max-width:640px;margin:18px 0 30px}
+  .hero .btns{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{display:inline-block;padding:13px 26px;border-radius:99px;font-size:14.5px;font-weight:700;text-decoration:none;cursor:pointer;border:none}
+  .btn.primary{background:#fff;color:var(--navy)}
+  .btn.primary:hover{background:var(--sky-l)}
+  .btn.outline{border:1.5px solid rgba(255,255,255,.55);color:#fff}
+  .btn.outline:hover{border-color:#fff}
+  .btn.navy{background:var(--navy);color:#fff}
+  .btn.navy:hover{background:var(--navy-d)}
+  .herostats{display:flex;gap:44px;margin-top:46px;flex-wrap:wrap}
+  .herostats .s b{display:block;font-size:26px;font-family:Georgia,serif}
+  .herostats .s span{font-size:11.5px;color:#9db6e0;text-transform:uppercase;letter-spacing:.1em}
+
+  /* partner band */
+  .band{background:var(--bg2);border-bottom:1px solid var(--border);padding:20px 0}
+  .band .wrap{display:flex;align-items:center;gap:34px;flex-wrap:wrap;justify-content:center}
+  .band span{font-size:12px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase}
+  .band b{font-family:Georgia,serif;font-size:16px;color:var(--ink2);letter-spacing:.04em}
+
+  /* programs */
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;margin-top:34px}
+  .pcard{border:1px solid var(--border);border-radius:var(--radius);padding:26px;background:#fff;transition:box-shadow .2s,transform .2s}
+  .pcard:hover{box-shadow:0 14px 40px rgba(31,56,100,.12);transform:translateY(-3px)}
+  .pcard h3{font-family:Georgia,serif;font-size:19px;color:var(--navy);margin-bottom:4px}
+  .pcard .range{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px}
+  .pcard ul{list-style:none;margin:10px 0 14px}
+  .pcard li{font-size:13px;color:var(--ink2);padding:4px 0;border-bottom:1px dashed var(--border);display:flex;justify-content:space-between}
+  .pcard li b{color:var(--ink)}
+  .chip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;border-radius:99px}
+  .chip.trad{background:#eef1f7;color:var(--navy)}
+  .chip.rwa{background:#e3f0fb;color:var(--accent)}
+
+  /* dual rail */
+  .dark{background:linear-gradient(160deg,var(--navy-d),var(--navy));color:#fff}
+  .dark h2{color:#fff}
+  .dark .lead{color:#c8d7ee}
+  .railgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:36px}
+  .rail{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:var(--radius);padding:26px}
+  .rail h3{font-family:Georgia,serif;font-size:18px;margin-bottom:8px;color:#fff}
+  .rail p{font-size:13.5px;color:#c8d7ee}
+  .rail .tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:99px;background:var(--sky);color:var(--navy-d);margin-bottom:12px}
+  .stack{display:flex;height:20px;border-radius:5px;overflow:hidden;margin:14px 0 6px}
+  .stack .s{background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-right:2px}
+  .stack .j{background:var(--junior);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+  .caption{font-size:11px;color:#9db6e0}
+
+  /* web3 / tokenization */
+  .tokgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:18px;margin-top:34px}
+  .tok{border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:10px;padding:20px 22px;background:#fff}
+  .tok h4{font-size:15px;color:var(--navy);margin-bottom:6px}
+  .tok p{font-size:13px;color:var(--ink2)}
+  .tok .status{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--good)}
+  .tok .status.dev{color:var(--gold)}
+
+  /* blog */
+  .bloggrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:20px;margin-top:34px}
+  .post{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#fff;cursor:pointer;transition:box-shadow .2s}
+  .post:hover{box-shadow:0 12px 34px rgba(31,56,100,.12)}
+  .post .ph{height:120px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:15px;letter-spacing:.06em;color:#fff;padding:0 20px;text-align:center}
+  .post .pb{padding:20px 22px}
+  .post .date{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+  .post h4{font-family:Georgia,serif;font-size:17px;color:var(--navy);margin:6px 0 8px}
+  .post p{font-size:13px;color:var(--ink2)}
+  .post .more{font-size:12.5px;font-weight:700;color:var(--accent)}
+  #postView{display:none;max-width:760px;margin:0 auto}
+  #postView h3{font-family:Georgia,serif;font-size:26px;color:var(--navy);margin-bottom:6px}
+  #postView .body p{margin-bottom:14px;color:var(--ink2);font-size:14.5px}
+
+  /* forms/downloads */
+  .dl{display:flex;align-items:center;gap:16px;border:1px solid var(--border);border-radius:10px;padding:16px 20px;background:#fff;margin-bottom:12px}
+  .dl .ic{width:42px;height:42px;border-radius:9px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+  .dl b{color:var(--navy);font-size:14px;display:block}
+  .dl span{font-size:12px;color:var(--muted)}
+  .dl a{margin-left:auto;font-size:13px;font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap}
+
+  /* contact */
+  .contact{background:var(--bg2)}
+  .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:30px}
+  @media(max-width:860px){.cgrid{grid-template-columns:1fr}}
+  label{font-size:12px;font-weight:700;color:var(--ink2);display:block;margin:12px 0 4px}
+  input,select,textarea{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;background:#fff}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sky)}
+
+  footer{background:var(--navy-d);color:#9db6e0;padding:50px 0 30px;font-size:13px}
+  footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px}
+  @media(max-width:860px){footer .cols{grid-template-columns:1fr 1fr}}
+  footer h5{color:#fff;font-size:12px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px}
+  footer a{color:#9db6e0;text-decoration:none;display:block;padding:3px 0}
+  footer a:hover{color:#fff}
+  footer .fine{border-top:1px solid rgba(255,255,255,.14);margin-top:36px;padding-top:20px;font-size:10.5px;color:#7288ad;line-height:1.7}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<nav><div class="wrap navin">
+  <a class="logo-lockup" href="#top">
+    <svg width="34" height="34" viewBox="0 0 44 44"><g fill="none" stroke-linecap="butt">
+      <path d="M19 6 L6 38" stroke="#1f3864" stroke-width="5"/>
+      <path d="M24.5 9.5 L14 38" stroke="#1f3864" stroke-width="3.2"/>
+      <path d="M23 5 L38 30" stroke="#7ea6d8" stroke-width="5"/>
+      <path d="M28.5 8.5 L40 28.5" stroke="#7ea6d8" stroke-width="3.2"/>
+      <path d="M14 33.5 H40" stroke="#1f3864" stroke-width="4.4"/>
+      <path d="M11 39 H37.5" stroke="#1f3864" stroke-width="4.4"/>
+      <circle cx="22" cy="24.5" r="3.4" fill="#2a78d6"/>
+    </g></svg>
+    <span class="logo-word">LD<span class="x">X</span> CAPITAL<sup>™</sup></span>
+  </a>
+  <a href="#programs">Loan Programs</a>
+  <a href="#rails">Digital Capital</a>
+  <a href="#tokenization">Tokenization</a>
+  <a href="#blog">Insights</a>
+  <a href="#forms">Forms</a>
+  <a href="app/">App</a>
+  <a href="#contact" class="cta">Get a Term Sheet</a>
+</div></nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top"><div class="wrap" style="position:relative;z-index:2">
+  <div class="kicker" style="color:var(--sky-l)">Commercial Real Estate Finance · Dunwoody, Georgia</div>
+  <h1>Commercial lending,<br><em>on every rail the market runs on.</em></h1>
+  <p>LDX Capital originates institutional commercial real estate credit from $1M to $50M — funded traditionally, or through tokenized capital markets with qualified custody at BitGo Bank &amp; Trust and pool infrastructure built for Centrifuge. Same underwriting discipline. Twice the capital.</p>
+  <div class="btns">
+    <a class="btn primary" href="#contact">Start an Application</a>
+    <a class="btn outline" href="#rails">How Digital Funding Works</a>
+  </div>
+  <div class="herostats">
+    <div class="s"><b>6</b><span>Loan Programs</span></div>
+    <div class="s"><b>$1M–$50M</b><span>Per Transaction</span></div>
+    <div class="s"><b>2</b><span>Execution Channels</span></div>
+    <div class="s"><b>Same-Day</b><span>Indicative Term Sheets</span></div>
+  </div>
+</div></header>
+
+<!-- partner band -->
+<div class="band"><div class="wrap">
+  <span>Infrastructure &amp; Custody</span>
+  <b>BitGo Bank &amp; Trust, N.A.</b>
+  <b>Centrifuge</b>
+  <b>Unykorn</b>
+  <span>OCC-chartered custody · Tokenized pools · Sovereign rails</span>
+</div></div>
+
+<!-- ================= PROGRAMS ================= -->
+<section id="programs"><div class="wrap">
+  <div class="kicker">Loan Programs</div>
+  <h2>Six programs. Every stage of the asset lifecycle.</h2>
+  <p class="lead">The same published standards we've always lent against — acquisition to stabilization, ground-up to takeout. Every program is available through both execution channels.</p>
+  <div class="grid3">
+    <div class="pcard"><h3>Permanent Financing</h3><div class="range">$3M – $50M · Fixed 4.0%–6.5%</div>
+      <ul><li>LTV / LTC<b>75% / 80%</b></li><li>Term / Amortization<b>10 yr / 30 yr</b></li><li>Guarantees<b>Recourse &amp; Non-Recourse</b></li><li>Purpose<b>Acquisitions &amp; Refinances</b></li></ul>
+      <span class="chip trad">Traditional</span> <span class="chip rwa">Tokenized Pool</span></div>
+    <div class="pcard"><h3>Bridge Loans</h3><div class="range">$2M – $50M · Floating 6.0%–12.0%</div>
+      <ul><li>LTV / LTC<b>85% / 85%</b></li><li>Term<b>Up to 5 yr · Interest Only</b></li><li>Guarantees<b>Recourse</b></li><li>Purpose<b>Acquisition · Recap · PIP · Conversion</b></li></ul>
+      <span class="chip trad">Traditional</span> <span class="chip rwa">Tokenized Pool</span></div>
+    <div class="pcard"><h3>Construction Loans</h3><div class="range">$2M – $50M · Floating 7.0%–12.0%</div>
+      <ul><li>LTV / LTC<b>80% / 80%</b></li><li>Term<b>Up to 5 yr · Milestone Draws</b></li><li>Guarantees<b>Recourse</b></li><li>Draw Control<b>Escrowed · Inspection-Verified</b></li></ul>
+      <span class="chip trad">Traditional</span> <span class="chip rwa">Digital Escrow</span></div>
+    <div class="pcard"><h3>Mezzanine / Preferred Equity</h3><div class="range">$1M – $10M · 12%–20%</div>
+      <ul><li>Combined LTV / LTC<b>85% / 85%</b></li><li>Structure<b>Custom Tranches</b></li><li>Guarantees<b>Recourse</b></li><li>Purpose<b>Acquisition · CMBS Assumption · Buyout</b></li></ul>
+      <span class="chip trad">Traditional</span> <span class="chip rwa">Credit Facility</span></div>
+    <div class="pcard"><h3>C-PACE Financing</h3><div class="range">$1M – $50M · Fixed 6.0%–8.0%</div>
+      <ul><li>Assessment-to-Value<b>Up to 25%</b></li><li>Term<b>Up to 30 yr</b></li><li>Guarantees<b>Non-Recourse</b></li><li>Purpose<b>New Construction · Renovation · Recap</b></li></ul>
+      <span class="chip trad">Traditional</span> <span class="chip rwa">Tokenized Pool</span></div>
+    <div class="pcard"><h3>SBA 7(a) Loans</h3><div class="range">Up to $5M · Prime + 1.00%–2.75%</div>
+      <ul><li>LTV / LTC<b>Up to 95%</b></li><li>Term<b>Up to 25 yr</b></li><li>Guaranty<b>Federal (SBA)</b></li><li>Purpose<b>Construction · Renovation · Acquisitions</b></li></ul>
+      <span class="chip trad">Traditional</span> <span class="chip rwa">Guaranteed Strip</span></div>
+  </div>
+</div></section>
+
+<!-- ================= DUAL RAIL ================= -->
+<section class="dark" id="rails"><div class="wrap">
+  <div class="kicker" style="color:var(--sky-l)">Digital Capital Markets</div>
+  <h2>Two ways to fund. One credit standard.</h2>
+  <p class="lead">Every approved LDX loan is priced on both channels. Traditional table funding when relationships win. Tokenized execution when speed, transparency, and global capital win. The borrower closes the same way either way.</p>
+  <div class="railgrid">
+    <div class="rail"><span class="tag">Rail · Tokenized Pools</span><h3>Centrifuge-Built Pool Infrastructure</h3>
+      <p>Our loans are structured for the market's leading RWA protocol — the infrastructure behind $1B+ tokenized funds for managers like New York Life Investment Management. Senior share classes fund from verified institutional investors; LDX retains the junior first-loss on every pool.</p>
+      <div class="stack"><div class="s" style="width:75%">Senior — institutional investors</div><div class="j" style="width:25%">LDX first-loss</div></div>
+      <div class="caption">Representative structure — splits vary by program (65/35 to 90/10)</div></div>
+    <div class="rail"><span class="tag">Rail · Qualified Custody</span><h3>BitGo Bank &amp; Trust, N.A.</h3>
+      <p>Every deal settles through segregated vaults at a federally chartered, OCC-regulated national trust bank — requiring 2 of 3 keys so no single party can move funds, with policy-enforced controls: whitelisted destinations, dual approvals, velocity limits, and $250M in custodial insurance.</p></div>
+    <div class="rail"><span class="tag">Rail · Live Reporting</span><h3>On-Chain Transparency</h3>
+      <p>Investors see pool NAV, collections, and collateral coverage on a live shared ledger — not a quarterly statement. Every credit decision, draw, and distribution is cryptographically receipted to an append-only audit trail. Automated covenant monitoring traps cash the moment a trigger breaches.</p></div>
+  </div>
+</div></section>
+
+<!-- ================= TOKENIZATION / WEB3 ================= -->
+<section id="tokenization"><div class="wrap">
+  <div class="kicker">The Full Digital Stack</div>
+  <h2>Every way the market evolves — without abandoning what works.</h2>
+  <p class="lead">Built with our technology partner Unykorn, LDX offers the complete spectrum from conventional whole loans to programmable capital markets instruments. Traditional where tradition pays. Digital where digital wins.</p>
+  <div class="tokgrid">
+    <div class="tok"><div class="status">Live</div><h4>Tokenized Credit Pools</h4><p>Senior/junior share classes on institutional pool infrastructure. Permissioned securities under Reg D 506(c) — only KYC-verified accredited investors can ever hold them.</p></div>
+    <div class="tok"><div class="status">Live</div><h4>Digital Construction Escrow</h4><p>Milestone-gated draws from qualified-custody vaults. Funds release only against signed inspection attestations with atomic lien-waiver exchange.</p></div>
+    <div class="tok"><div class="status">Live</div><h4>Fractional Participations</h4><p>Club deals carved into transferable ERC-3643 note participations — institutional minimums, whitelisted transfers, built-in compliance on every trade.</p></div>
+    <div class="tok"><div class="status dev">In Development</div><h4>Settlement Stablecoins</h4><p>White-label digital-dollar settlement instruments engineered on Unykorn's sovereign Rust ledger — deterministic, fully-reserved, issued through licensed partners for escrow, draws, and distributions across every facet of the industry.</p></div>
+    <div class="tok"><div class="status dev">In Development</div><h4>Tokenized Fund Shares</h4><p>Evergreen credit fund with on-chain NAV and monthly liquidity windows — the CRE-credit analog of tokenized treasury funds.</p></div>
+    <div class="tok"><div class="status dev">Roadmap</div><h4>Secondary Market Access</h4><p>As regulated venues mature, LDX paper is built to list: transfer-restricted today, exchange-ready by design.</p></div>
+  </div>
+</div></section>
+
+<!-- ================= BLOG ================= -->
+<section id="blog" style="background:var(--bg2)"><div class="wrap">
+  <div class="kicker">Insights</div>
+  <h2>From the desk of LDX Capital.</h2>
+  <p class="lead">Market commentary, deal frameworks, and where commercial credit is heading.</p>
+
+  <div class="bloggrid" id="blogList">
+    <div class="post" onclick="openPost(0)"><div class="ph" style="background:linear-gradient(140deg,#1f3864,#2a5a9e)">RWA · Explainer</div><div class="pb">
+      <div class="date">July 2026 · Digital Capital</div><h4>What Tokenized Lending Actually Changes — and What It Doesn't</h4>
+      <p>Securitization you already know, with the trustee replaced by software. A plain-English walkthrough for CRE professionals.</p><span class="more">Read article →</span></div></div>
+    <div class="post" onclick="openPost(1)"><div class="ph" style="background:linear-gradient(140deg,#2a5a9e,#7ea6d8)">C-PACE · Analysis</div><div class="pb">
+      <div class="date">July 2026 · Programs</div><h4>Why C-PACE Is the Best Collateral Nobody Talks About</h4>
+      <p>A senior tax-assessment lien at 25% of value, 30-year fixed, non-recourse — and why bond-fund capital wants it.</p><span class="more">Read article →</span></div></div>
+    <div class="post" onclick="openPost(2)"><div class="ph" style="background:linear-gradient(140deg,#142647,#1f3864)">Credit · Framework</div><div class="pb">
+      <div class="date">June 2026 · Underwriting</div><h4>The Decline That Sells the Deal: Why Published Credit Gates Win Cheaper Capital</h4>
+      <p>Senior investors don't pay for optimism — they pay for discipline they can verify. Inside our automated stress suite.</p><span class="more">Read article →</span></div></div>
+  </div>
+
+  <div id="postView">
+    <a href="#blog" onclick="closePost()" style="font-size:13px;font-weight:700;color:var(--accent);text-decoration:none">← All articles</a>
+    <div class="date" style="margin-top:14px"></div><h3></h3><div class="body" style="margin-top:12px"></div>
+  </div>
+</div></section>
+
+<!-- ================= FORMS ================= -->
+<section id="forms"><div class="wrap">
+  <div class="kicker">Forms &amp; Downloads</div>
+  <h2>Everything you need to start.</h2>
+  <div style="max-width:780px;margin-top:26px">
+    <div class="dl"><div class="ic">DOC</div><div><b>Loan Programs Chart — Traditional &amp; RWA</b><span>Both execution channels, side by side, one page each</span></div><a href="pdfs/LDC-Program-Charts-Traditional-and-RWA.html" target="_blank" rel="noopener">Open ↗</a></div>
+    <div class="dl"><div class="ic">DOC</div><div><b>RWA Funding, Explained</b><span>The plain-English briefing on tokenized lending — no crypto background needed</span></div><a href="pdfs/LDC-RWA-Funding-Explained.html" target="_blank" rel="noopener">Open ↗</a></div>
+    <div class="dl"><div class="ic">DOC</div><div><b>Centrifuge / BitGo Platform Blueprint</b><span>The full technical framework — pool architecture, data-room spec, servicing feed, stress methodology, 9-step funding lifecycle</span></div><a href="pdfs/LDC-Centrifuge-BitGo-Blueprint.html" target="_blank" rel="noopener">Open ↗</a></div>
+    <div class="dl"><div class="ic">FORM</div><div><b>Loan Application Package</b><span>Universal intake — all six programs</span></div><a href="#contact">Start intake →</a></div>
+    <div class="dl"><div class="ic">FORM</div><div><b>Personal Financial Statement</b><span>Required for recourse programs — request via contact form</span></div><a href="#contact">Request →</a></div>
+    <div class="dl"><div class="ic">FORM</div><div><b>Document Checklist by Program</b><span>Entity, credit file, and legal requirements</span></div><a href="#contact">Request →</a></div>
+  </div>
+</div></section>
+
+<!-- ================= CONTACT ================= -->
+<section class="contact" id="contact"><div class="wrap">
+  <div class="kicker">Get Started</div>
+  <h2>Same-day indicative term sheets.</h2>
+  <div class="cgrid">
+    <div>
+      <p class="lead" style="margin-bottom:18px">Tell us about your deal. Our underwriting platform evaluates it against all six programs and prices both execution channels — you'll see exactly where it fits and why.</p>
+      <p style="font-size:14.5px;color:var(--ink2);line-height:2">
+        <b style="color:var(--navy)">LDX Capital</b><br>
+        1651 Mt Vernon Rd, 2nd Floor<br>Dunwoody, GA 30338<br>
+        (770) 272-2232<br>
+        info@ldxcapital.com</p>
+    </div>
+    <div>
+      <form onsubmit="event.preventDefault();this.innerHTML='<p style=&quot;font-size:16px;color:var(--good);font-weight:700;padding:30px 0&quot;>✓ Received. Our team will respond within one business day with next steps.</p>'">
+        <label>Name*</label><input required placeholder="Full name">
+        <label>Email*</label><input required type="email" placeholder="you@company.com">
+        <label>Loan Program*</label><select required><option value="">Select a program…</option><option>Permanent Financing</option><option>Bridge Loan</option><option>Construction Loan</option><option>Mezzanine / Preferred Equity</option><option>C-PACE</option><option>SBA 7(a)</option><option>Not sure — advise me</option></select>
+        <label>Requested Amount</label><input placeholder="$">
+        <label>Deal Summary</label><textarea rows="4" placeholder="Property type, location, purpose, timeline…"></textarea>
+        <div style="margin-top:16px"><button class="btn navy" type="submit">Request Term Sheet</button></div>
+      </form>
+    </div>
+  </div>
+</div></section>
+
+<!-- ================= FOOTER ================= -->
+<footer><div class="wrap">
+  <div class="cols">
+    <div>
+      <div class="logo-word" style="color:#fff;font-size:19px;margin-bottom:10px">LD<span class="x" style="color:var(--sky)">X</span> CAPITAL<sup style="color:#7288ad">™</sup></div>
+      <p style="font-size:12.5px;line-height:1.7">Institutional commercial real estate credit across traditional and tokenized capital markets. Qualified custody at BitGo Bank &amp; Trust, N.A. Pool infrastructure built for Centrifuge. Technology by Unykorn.</p>
+    </div>
+    <div><h5>Programs</h5><a href="#programs">Permanent</a><a href="#programs">Bridge</a><a href="#programs">Construction</a><a href="#programs">Mezzanine</a><a href="#programs">C-PACE</a><a href="#programs">SBA 7(a)</a></div>
+    <div><h5>Digital</h5><a href="#rails">How It Works</a><a href="#tokenization">Tokenization</a><a href="#tokenization">Stablecoin Rails</a><a href="#blog">Insights</a></div>
+    <div><h5>Company</h5><a href="#forms">Forms</a><a href="#contact">Contact</a><a href="#top">Privacy Policy</a><a href="#top">Terms of Use</a></div>
+  </div>
+  <div class="fine">© 2026 LDX Capital. All rights reserved. LDX Capital is a licensed commercial lender. Digital securities described on this site are offered exclusively under Regulation D Rule 506(c) to verified accredited investors and are not available to the general public; nothing on this site is an offer to sell or a solicitation to buy any security. Settlement stablecoin instruments are in development and will be issued exclusively through licensed partners. Digital-asset custody provided by BitGo Bank &amp; Trust, N.A. All loans subject to full underwriting, documentation, and credit approval. Terms indicative and subject to change.</div>
+</div></footer>
+
+<script>
+const POSTS=[
+ {date:"July 2026 · Digital Capital",title:"What Tokenized Lending Actually Changes — and What It Doesn't",
+  body:["If you understand CMBS, you already understand tokenized lending. A pool of loans, a senior class paid first, a junior class that absorbs first losses, a trustee that runs the waterfall, and a servicer tape that tells investors what happened. Tokenization keeps every one of those roles — it just replaces the slowest ones with software.",
+  "The certificate becomes a digital token that keeps its own transfer books. The trustee's waterfall becomes code that executes identically every month. The remittance report becomes a live net-asset-value feed updated from actual collections. And wire day becomes a settlement that clears in minutes, around the clock, in fully-reserved digital dollars.",
+  "What doesn't change matters more: the mortgage, the title work, the appraisal, the personal guaranty, and state foreclosure law are untouched. Underwriting discipline is untouched — in fact it's amplified, because published credit gates are enforced automatically and visibly. When a deal fails the debt-service floor, it declines. Investors can see that discipline, which is precisely why they accept senior yields in the 5–8% range on paper a hard-money desk would price at twelve.",
+  "The practical upshot for borrowers: nothing about your closing changes. The upshot for the capital markets: a lender who can fund from a global pool of verified institutional investors in days instead of committee cycles. That's the whole revolution — and it's enough."]},
+ {date:"July 2026 · Programs",title:"Why C-PACE Is the Best Collateral Nobody Talks About",
+  body:["Commercial PACE financing occupies a strange corner of the capital stack: a senior tax-assessment lien, capped at 25% of property value, amortizing over up to 30 years at a fixed rate, non-recourse to the sponsor. Structurally, it is closer to a municipal special assessment than to a mortgage — which is exactly why it deserves more attention than it gets.",
+  "Consider what a senior investor actually holds: a claim that sits with the property taxes, ahead of every mortgage on the asset, at four-to-one collateral coverage, with a payment stream measured in decades. In the tokenized-fund era, that profile reads like a bond fund's shopping list. Long-duration, fixed-rate, assessment-secured paper is the natural next step for the same institutional capital that moved a billion dollars into tokenized treasury funds.",
+  "For property owners, C-PACE remains the cheapest capital in the stack for energy-related scope — new construction envelope, mechanicals, solar, water systems — and it can fund retroactively in many jurisdictions. For the capital markets, it is the asset class where tokenized distribution should arrive first: small first-loss buffers, senior lien, sleep-at-night collateral.",
+  "LDX underwrites C-PACE from $1M to $50M. If your project has qualifying scope, the assessment should almost always be in your stack — and if you're an investor looking at tokenized credit for the first time, this is the program to look at first."]},
+ {date:"June 2026 · Underwriting",title:"The Decline That Sells the Deal: Why Published Credit Gates Win Cheaper Capital",
+  body:["Here is a deal our platform declined: an $8.5 million renovation bridge at 77% of value with debt-service coverage of 1.05x — five basis points under our published 1.10x floor. Under stress — income down ten percent, or rates up two hundred basis points — coverage fell below one. The system declined it automatically, and the decline itself was cryptographically receipted.",
+  "Why publish that? Because the decline is the product. Senior capital doesn't pay premium prices for a lender's optimism; it pays for discipline it can verify. A credit box that visibly rejects deals is the difference between selling senior paper at five-and-a-half percent and begging for it at nine.",
+  "Every LDX deal runs the same gauntlet: program bands, loan-to-value and loan-to-cost caps, debt-service floors, and a three-scenario stress suite — income minus ten percent, rate plus two hundred basis points, value minus fifteen percent. Pass, and both funding channels price the deal the same day. Fail, and the system tells you exactly which constraint binds and what loan size clears it — the declined bridge above works at $7.8 million, and that's the term sheet we send instead.",
+  "Discipline, made visible, is a pricing advantage. That is the entire thesis of the platform — and the reason the junior positions we retain behind our own underwriting are the best asset on our book."]}
+];
+function openPost(i){
+  const p=POSTS[i];
+  document.getElementById('blogList').style.display='none';
+  const v=document.getElementById('postView');
+  v.style.display='block';
+  v.querySelector('.date').textContent=p.date;
+  v.querySelector('h3').textContent=p.title;
+  v.querySelector('.body').innerHTML=p.body.map(x=>`<p>${x}</p>`).join('');
+  location.hash='blog';
+}
+function closePost(){document.getElementById('postView').style.display='none';document.getElementById('blogList').style.display='grid';}
+/* Register PWA service worker from /app so users can install the platform from the site */
+if('serviceWorker' in navigator){navigator.serviceWorker.register('app/sw.js',{scope:'app/'}).catch(()=>{});}
+</script>
+</body>
+</html>

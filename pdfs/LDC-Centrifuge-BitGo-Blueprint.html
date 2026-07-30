@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LDX Capital — Centrifuge / BitGo Platform Blueprint</title>
+<link rel="stylesheet" href="_print.css">
+</head>
+<body>
+
+<div class="brand">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" width="38" height="38">
+    <g fill="none" stroke-linecap="butt">
+      <path d="M19 6 L6 38" stroke="#1f3864" stroke-width="5"/>
+      <path d="M24.5 9.5 L14 38" stroke="#1f3864" stroke-width="3.2"/>
+      <path d="M23 5 L38 30" stroke="#7ea6d8" stroke-width="5"/>
+      <path d="M28.5 8.5 L40 28.5" stroke="#7ea6d8" stroke-width="3.2"/>
+      <path d="M14 33.5 H40" stroke="#1f3864" stroke-width="4.4"/>
+      <path d="M11 39 H37.5" stroke="#1f3864" stroke-width="4.4"/>
+      <circle cx="22" cy="24.5" r="3.4" fill="#2a78d6"/>
+    </g>
+  </svg>
+  <div class="name">LD<em>X</em> CAPITAL</div>
+</div>
+
+<div class="kicker">Technical Platform Blueprint</div>
+<h1>Centrifuge · BitGo · Underwriting Engine.</h1>
+<div class="sub">The full architecture LDX uses to originate, close, custody, and service CRE debt across tokenized capital markets.</div>
+
+<h2>1. Executive summary</h2>
+<p>LDX Capital operates a dual-channel commercial lending platform: same underwriting, two execution paths. Traditional table funding when relationships and cadence win; tokenized pool funding when global capital, live reporting, and mechanical enforcement win. This document is the technical map senior investors and partner protocols need to size the platform.</p>
+
+<h2>2. Pool architecture (Centrifuge)</h2>
+<h4>Pool topology</h4>
+<ul>
+  <li><strong>One pool per program</strong> (bridge, perm, C-PACE) — clean investor mandate targeting.</li>
+  <li><strong>Two share classes</strong> per pool: senior (institutional) and junior (LDX-retained).</li>
+  <li><strong>Whitelisted-only</strong> transfers via ERC-3643 permissioned securities.</li>
+  <li><strong>Waterfall executed in code</strong> — deterministic, auditable, no trustee discretion.</li>
+</ul>
+
+<h4>Representative capital stack</h4>
+<div class="chart"><div class="s" style="width:75%">Senior 75% · 6.5% target yield</div><div class="j" style="width:25%">Junior 25% · LDX first-loss</div></div>
+<p class="caption">Bridge pool baseline — 65/35 to 90/10 by program.</p>
+
+<h2>3. Custody (BitGo Bank &amp; Trust, N.A.)</h2>
+<table>
+  <tr><th>Control</th><th>Configuration</th></tr>
+  <tr><td>Regulator</td><td>OCC-chartered national trust bank</td></tr>
+  <tr><td>Signing scheme</td><td>2-of-3 multi-sig — cold, warm, HSM</td></tr>
+  <tr><td>Address whitelist</td><td>Pre-approved counterparties only</td></tr>
+  <tr><td>Approval policy</td><td>Dual approvals · velocity limits</td></tr>
+  <tr><td>Insurance</td><td>Up to $250M custodial insurance</td></tr>
+  <tr><td>Alternates on request</td><td>Anchorage Digital Bank · Fireblocks</td></tr>
+</table>
+
+<h2>4. Data-room specification</h2>
+<h4>Deal-level (per loan)</h4>
+<ul>
+  <li>Executed note, mortgage/deed of trust, and title policy</li>
+  <li>Appraisal (MAI or state-certified equivalent)</li>
+  <li>Sponsor PFS + entity documentation + credit file</li>
+  <li>Environmental Phase I (Phase II if triggered)</li>
+  <li>Rent roll, T-12, and stabilized pro forma</li>
+  <li>Insurance evidence (property, GL, flood if applicable)</li>
+  <li>Servicing setup: escrows, reserves, draw schedule</li>
+</ul>
+
+<h4>Pool-level (per share class)</h4>
+<ul>
+  <li>Weighted-average LTV, LTC, DSCR, and remaining term</li>
+  <li>Geographic and property-type concentration</li>
+  <li>Delinquency, modification, and loss history</li>
+  <li>Pool-level Reg D 506(c) offering documents</li>
+</ul>
+
+<h2>5. Servicing feed (live NAV)</h2>
+<p>Instead of a quarterly PDF, LDX pools publish a machine-readable feed updated from actual collections:</p>
+<ul>
+  <li><strong>NAV</strong> — recalculated on every payment event, senior and junior separately.</li>
+  <li><strong>Collections tape</strong> — payment, escrow, and reserve movements per loan.</li>
+  <li><strong>Covenant monitor</strong> — DSCR, LTV, and reserve triggers evaluated on receipt.</li>
+  <li><strong>Cash trap</strong> — automatic diversion to senior when any covenant breaches.</li>
+  <li><strong>Distributions</strong> — computed by waterfall code, disbursed from BitGo vaults.</li>
+</ul>
+
+<h2>6. Underwriting engine &amp; stress methodology</h2>
+<h4>Program credit gates (enforced automatically)</h4>
+<ul>
+  <li>LTV / LTC caps per program</li>
+  <li>DSCR floor per program (1.05x – 1.25x)</li>
+  <li>Term ceiling · amortization · guaranty class</li>
+  <li>Sponsor net worth ≥ requested loan and liquidity ≥ 10% of loan (recourse)</li>
+</ul>
+
+<h4>Three-scenario stress</h4>
+<table>
+  <tr><th>Scenario</th><th>Shock</th><th>Rule</th></tr>
+  <tr><td>Income</td><td>NOI −10%</td><td>DSCR must remain ≥ 1.00x</td></tr>
+  <tr><td>Rate</td><td>Coupon +200 bps</td><td>DSCR must remain ≥ 1.00x</td></tr>
+  <tr><td>Value</td><td>Appraisal −15%</td><td>LTV must remain ≤ 90%</td></tr>
+</table>
+<p>A deal that passes the base case but fails any stress is downsized automatically — the platform returns the loan amount that clears every gate.</p>
+
+<h2>7. Regulatory posture</h2>
+<ul>
+  <li><strong>Reg D 506(c)</strong> for senior share class — verified accredited only, no general solicitation limits.</li>
+  <li><strong>ERC-3643 permissioned securities</strong> — transfer restrictions enforced on-chain.</li>
+  <li><strong>BitGo Bank &amp; Trust custody</strong> — OCC-supervised qualified custodian.</li>
+  <li><strong>KYC/KYB and Travel Rule</strong> executed via Centrifuge whitelist + LDX intake.</li>
+  <li><strong>State foreclosure law untouched</strong> — the underlying real property remedies are unchanged.</li>
+</ul>
+
+<h2>8. Nine-step funding lifecycle</h2>
+<ol>
+  <li><strong>Intake.</strong> Deal enters the LDX platform via app or API.</li>
+  <li><strong>Auto-gate.</strong> Program credit box + stress suite run. Verdict + downsize returned.</li>
+  <li><strong>Term sheet.</strong> Same-day indicative pricing on both channels.</li>
+  <li><strong>Underwriting.</strong> Full file assembled — appraisal, title, PFS, environmental.</li>
+  <li><strong>Committee.</strong> LDX credit committee signs off; junior tranche sized.</li>
+  <li><strong>Pool subscription.</strong> Senior investors commit; capital cleared into BitGo vault.</li>
+  <li><strong>Closing.</strong> Note funded from vault; title recorded; loan tokenized into pool.</li>
+  <li><strong>Servicing.</strong> Payments hit vault; waterfall executes; NAV updates live.</li>
+  <li><strong>Exit.</strong> Loan pays off or refinances; pool receives payoff; distributions sweep.</li>
+</ol>
+
+<h2>9. Integration surface</h2>
+<table>
+  <tr><th>Partner</th><th>Interface</th><th>Purpose</th></tr>
+  <tr><td>Centrifuge</td><td>Pool contracts + investor UI</td><td>Senior share issuance, NAV, secondary readiness</td></tr>
+  <tr><td>BitGo Bank &amp; Trust</td><td>Enterprise API + webhook</td><td>Vault, policy engine, insured custody</td></tr>
+  <tr><td>Chainlink (optional)</td><td>Oracle feed</td><td>Rate index, price feed for stress scenarios</td></tr>
+  <tr><td>Fireblocks / Anchorage</td><td>Alt custody</td><td>Counterparty custodial preferences</td></tr>
+  <tr><td>Servicer of record</td><td>Loan-tape API</td><td>Payment, delinquency, escrow events</td></tr>
+</table>
+
+<div class="callout">
+  <strong>Same credit box. Same closing.</strong> The tokenized rail is a plumbing upgrade, not a re-underwrite. That is what makes LDX pools sellable to institutional senior capital: their diligence file looks like a CMBS diligence file, plus a live feed and a national-trust-bank vault.
+</div>
+
+<div class="footer">
+  LDX Capital · 1651 Mt Vernon Rd, 2nd Floor · Dunwoody, GA 30338 · (770) 272-2232 · kevan@ldrcllc.com · <a href="https://ldrcllc.com">ldrcllc.com</a><br>
+  This blueprint is provided for informational purposes only and is not an offer to sell or a solicitation to buy any security. Digital securities described herein are offered exclusively under Reg D Rule 506(c) to verified accredited investors. Custody by BitGo Bank & Trust, N.A. Terms indicative and subject to change.
+</div>
+
+</body>
+</html>

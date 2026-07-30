@@ -1,0 +1,15 @@
+# Cloudflare Pages headers — applied when deployed to Cloudflare
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+/app/sw.js
+  Service-Worker-Allowed: /app/
+  Cache-Control: no-cache
+
+/icons/*
+  Cache-Control: public, max-age=604800
+
+/pdfs/*
+  Cache-Control: public, max-age=86400

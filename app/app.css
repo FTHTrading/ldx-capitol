@@ -1,0 +1,95 @@
+:root{
+  --navy:#1f3864;--navy-d:#142647;--navy-2:#16305f;--sky:#7ea6d8;--sky-l:#b8d0ec;
+  --ink:#17203a;--ink2:#4d5975;--muted:#8791a8;--bg:#ffffff;--bg2:#f5f7fb;
+  --gold:#c9a227;--accent:#2a78d6;--junior:#eb6834;--good:#1a8f66;--bad:#c93838;
+  --border:#e2e7f0;--radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg2)}
+body{font-family:'Segoe UI',-apple-system,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.55;font-size:15px;min-height:100vh;padding-bottom:80px}
+h1,h2,h3{font-family:Georgia,'Times New Roman',serif;color:var(--navy);letter-spacing:-.01em}
+h1{font-size:26px;line-height:1.18}
+h2{font-size:19px;margin-bottom:14px}
+h3{font-size:15px;margin-bottom:8px}
+input,select,textarea,button{font-family:inherit;font-size:14px}
+
+/* topbar */
+.topbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:10px 16px}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--navy);font-family:Georgia,serif;font-weight:700;font-size:16px;letter-spacing:.06em}
+.brand em{color:var(--accent);font-style:normal}
+.topbar nav{display:flex;gap:4px;margin-left:auto;overflow-x:auto;flex-wrap:nowrap;max-width:100%;-webkit-overflow-scrolling:touch}
+.topbar nav button{background:transparent;border:none;padding:9px 13px;border-radius:8px;font-size:13px;color:var(--ink2);font-weight:600;cursor:pointer;white-space:nowrap}
+.topbar nav button.active{background:var(--navy);color:#fff}
+#installBtn{background:var(--accent);color:#fff;border:none;padding:9px 14px;border-radius:8px;font-weight:700;cursor:pointer}
+
+main{max-width:900px;margin:0 auto;padding:22px 16px}
+
+.tab{display:none}
+.tab.active{display:block}
+
+.hero{margin-bottom:20px}
+.k{font-size:11px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.hero p{color:var(--ink2);margin-top:8px;font-size:14.5px;max-width:640px}
+
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:18px}
+
+.panels{display:grid;grid-template-columns:1fr;gap:18px}
+@media(min-width:840px){.panels{grid-template-columns:1fr 1fr}}
+
+label{font-size:11.5px;font-weight:700;color:var(--ink2);display:block;margin:12px 0 4px;text-transform:uppercase;letter-spacing:.06em}
+input,select,textarea{width:100%;padding:11px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sky)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.grid2{grid-template-columns:1fr}}
+
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.btn{border:none;padding:11px 18px;border-radius:99px;font-weight:700;font-size:13.5px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.primary{background:var(--navy);color:#fff}
+.btn.primary:hover{background:var(--navy-d)}
+.btn.ghost{background:transparent;border:1.5px solid var(--border);color:var(--navy)}
+.btn.ghost:hover{border-color:var(--sky)}
+.btn.small{padding:6px 12px;font-size:12px}
+
+/* verdict */
+.verdict{padding:14px 16px;border-radius:10px;background:var(--bg2);color:var(--ink2);border:1px dashed var(--border);margin-bottom:14px}
+.verdict.pass{background:#e8f4ec;color:#0f5e40;border-color:#8bcaa8;border-style:solid}
+.verdict.fail{background:#fbe8e8;color:#7a1e1e;border-color:#e3a1a1;border-style:solid}
+.verdict.marginal{background:#fef6e4;color:#7a5f10;border-color:#e3ceaa;border-style:solid}
+
+.prow{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.prow .pn{font-family:Georgia,serif;font-weight:700;color:var(--navy);font-size:15px}
+.prow .pt{font-size:12.5px;color:var(--ink2);margin-top:2px}
+.prow .badges{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.badge{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;letter-spacing:.05em;text-transform:uppercase}
+.badge.pass{background:#e8f4ec;color:#0f5e40}
+.badge.fail{background:#fbe8e8;color:#7a1e1e}
+.badge.channel-t{background:#eef1f7;color:var(--navy)}
+.badge.channel-r{background:#e3f0fb;color:var(--accent)}
+
+.stress table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.stress th,.stress td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+.stress th{color:var(--muted);font-weight:600;text-transform:uppercase;font-size:10.5px;letter-spacing:.1em}
+.stress td:nth-child(4){font-weight:700}
+
+/* copilot */
+.copilot .log{background:var(--bg2);border-radius:12px;padding:16px;min-height:200px;max-height:340px;overflow-y:auto;margin-bottom:12px}
+.copilot .msg{margin-bottom:12px;font-size:14px;line-height:1.55}
+.copilot .msg.u{color:var(--ink);font-weight:600}
+.copilot .msg.a{color:var(--ink2)}
+.copilot .msg.a::before{content:"LDX · ";color:var(--accent);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:inline-block;margin-right:6px;vertical-align:middle}
+.chatform{display:flex;gap:8px}
+.chatform input{flex:1}
+.suggestions{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:#eef2f8;color:var(--navy);border:none;padding:7px 12px;border-radius:99px;font-size:12px;cursor:pointer;font-weight:600}
+.chip:hover{background:#dde5f0}
+
+/* pipeline */
+.pcard{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.pcard .meta{font-size:12.5px;color:var(--muted);margin-top:2px}
+.pcard .amt{font-family:Georgia,serif;color:var(--navy);font-weight:700;font-size:15px}
+.pcard .del{background:transparent;border:none;color:var(--bad);cursor:pointer;font-size:12px;font-weight:700}
+
+.muted{color:var(--muted);font-size:12.5px}
+
+footer{max-width:900px;margin:20px auto;padding:0 16px 30px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+footer a{color:var(--accent);text-decoration:none}

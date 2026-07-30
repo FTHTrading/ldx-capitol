@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LDX Capital — Platform</title>
+<meta name="description" content="LDX Capital platform — evaluate deals against six loan programs and dual execution channels.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="../icons/ldx-mark.svg">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<meta name="theme-color" content="#1f3864">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LDX">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <img src="../icons/ldx-mark.svg" width="28" height="28" alt="">
+    <span>LD<em>X</em> CAPITAL</span>
+  </a>
+  <nav>
+    <button data-tab="deal" class="active">Deal</button>
+    <button data-tab="pipeline">Pipeline</button>
+    <button data-tab="copilot">Copilot</button>
+    <button data-tab="account">Account</button>
+  </nav>
+  <button id="installBtn" hidden>Install App</button>
+</header>
+
+<main>
+
+<!-- ============ DEAL EVAL ============ -->
+<section id="tab-deal" class="tab active">
+  <div class="hero">
+    <div class="k">Deal Evaluation</div>
+    <h1>Price a deal against every LDX program — in seconds.</h1>
+    <p>Six programs. Two execution channels. One credit standard. The same platform our own underwriting desk runs on.</p>
+  </div>
+
+  <div class="panels">
+    <form class="card" id="dealForm">
+      <h2>Deal Inputs</h2>
+
+      <label>Property Type</label>
+      <select id="propType">
+        <option>Multifamily</option><option>Retail</option><option>Office</option>
+        <option>Industrial / Flex</option><option>Hospitality</option><option>Self-Storage</option>
+        <option>Mixed-Use</option><option>Special Purpose</option>
+      </select>
+
+      <label>Purpose</label>
+      <select id="purpose">
+        <option>Acquisition</option><option>Refinance</option><option>Construction / GC</option>
+        <option>Renovation / PIP</option><option>Recapitalization</option><option>Bridge to Perm</option>
+      </select>
+
+      <div class="grid2">
+        <div><label>Property Value ($)</label><input type="number" id="value" value="12500000" min="1000000"></div>
+        <div><label>Loan Amount ($)</label><input type="number" id="loan" value="9000000" min="1000000"></div>
+      </div>
+      <div class="grid2">
+        <div><label>NOI / Stabilized NOI ($/yr)</label><input type="number" id="noi" value="825000"></div>
+        <div><label>Total Project Cost ($)</label><input type="number" id="cost" value="11500000"></div>
+      </div>
+      <div class="grid2">
+        <div><label>Sponsor Net Worth ($)</label><input type="number" id="nw" value="8000000"></div>
+        <div><label>Sponsor Liquidity ($)</label><input type="number" id="liq" value="1500000"></div>
+      </div>
+
+      <div class="grid2">
+        <div><label>Target Term (yr)</label><input type="number" id="term" value="10" min="1" max="30"></div>
+        <div><label>Term Sheet Deadline</label><input type="date" id="deadline"></div>
+      </div>
+
+      <div class="row">
+        <button type="button" id="runBtn" class="btn primary">Evaluate</button>
+        <button type="button" id="stressBtn" class="btn ghost">Run Stress Suite</button>
+        <button type="button" id="saveBtn" class="btn ghost">Save to Pipeline</button>
+      </div>
+    </form>
+
+    <div class="card results">
+      <h2>Result</h2>
+      <div id="verdict" class="verdict">Enter deal inputs then press <b>Evaluate</b>.</div>
+      <div id="programs"></div>
+      <div id="stress" class="stress" hidden>
+        <h3>Stress Suite</h3>
+        <table>
+          <thead><tr><th>Scenario</th><th>DSCR</th><th>LTV</th><th>Verdict</th></tr></thead>
+          <tbody id="stressRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PIPELINE ============ -->
+<section id="tab-pipeline" class="tab">
+  <div class="hero"><div class="k">Pipeline</div>
+    <h1>Deals in flight.</h1>
+    <p>Every evaluation you save shows up here. This device only — nothing leaves your phone until you request a term sheet.</p>
+  </div>
+  <div class="card">
+    <div class="row" style="margin-bottom:16px">
+      <button id="clearPipeline" class="btn ghost small">Clear all</button>
+      <span class="muted" id="pipelineCount">0 deals</span>
+    </div>
+    <div id="pipelineList"></div>
+  </div>
+</section>
+
+<!-- ============ COPILOT ============ -->
+<section id="tab-copilot" class="tab">
+  <div class="hero"><div class="k">Copilot</div>
+    <h1>Ask the LDX credit engine anything.</h1>
+    <p>Demo copilot — answers questions off the same rules the platform prices with. Full LLM wiring ships once the API endpoint is live.</p>
+  </div>
+  <div class="card copilot">
+    <div id="chatLog" class="log"></div>
+    <form id="chatForm" class="chatform">
+      <input id="chatInput" placeholder="Ask about a program, a metric, or a live deal…" autocomplete="off">
+      <button class="btn primary">Send</button>
+    </form>
+    <div class="suggestions">
+      <button class="chip" data-q="What's the max leverage on a bridge loan?">Max leverage on bridge?</button>
+      <button class="chip" data-q="Explain the tokenized pool structure.">Tokenized pool structure?</button>
+      <button class="chip" data-q="When does C-PACE beat mezz?">C-PACE vs mezz?</button>
+      <button class="chip" data-q="How does BitGo custody work here?">BitGo custody?</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACCOUNT ============ -->
+<section id="tab-account" class="tab">
+  <div class="hero"><div class="k">Account</div>
+    <h1>Your workspace.</h1>
+  </div>
+  <div class="card">
+    <label>Name</label><input id="acctName" placeholder="Full name">
+    <label>Firm</label><input id="acctFirm" placeholder="Firm / borrower entity">
+    <label>Email</label><input id="acctEmail" type="email" placeholder="you@company.com">
+    <label>Phone</label><input id="acctPhone" placeholder="(770) 272-2232">
+    <div class="row" style="margin-top:16px">
+      <button id="saveAcct" class="btn primary">Save</button>
+      <button id="wipeAcct" class="btn ghost">Wipe device data</button>
+    </div>
+    <p class="muted" style="margin-top:16px">Saved locally on this device only. Requesting a term sheet is what sends anything to LDX.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div>© 2026 LDX Capital · Institutional CRE credit across traditional and tokenized rails.</div>
+  <div><a href="../index.html">← Back to ldxcapital.com</a></div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
