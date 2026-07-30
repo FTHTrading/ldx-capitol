@@ -1,12 +1,13 @@
 /* LDX Capital PWA service worker — offline-first shell */
-const CACHE = 'ldx-app-v2';
+const CACHE = 'ldx-app-v3';
 const ASSETS = [
   './',
   './index.html',
   './app.css',
   './app.js',
   './manifest.webmanifest',
-  '../brand/fth-logo-nav.png',
+  '../brand/ldx-nav.svg',
+  '../brand/ldx-lockup.svg',
   '../icons/icon-192.png',
   '../icons/icon-512.png',
   '../icons/apple-touch-icon.png',

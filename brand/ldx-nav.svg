@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 48" width="280" height="48">
+  <defs>
+    <linearGradient id="gn" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#e6c65c"/>
+      <stop offset="0.55" stop-color="#c9a227"/>
+      <stop offset="1" stop-color="#8a6d16"/>
+    </linearGradient>
+  </defs>
+  <g font-family="Georgia, 'Times New Roman', serif" font-weight="700">
+    <text x="0" y="36" font-size="34" fill="#1f3864" letter-spacing="2">LD</text>
+    <text x="47" y="36" font-size="34" fill="url(#gn)" letter-spacing="2">X</text>
+    <text x="72" y="36" font-size="34" fill="#1f3864" letter-spacing="2">CAPITAL</text>
+  </g>
+</svg>
