@@ -222,16 +222,16 @@
   const KB = [
     { k: ['bridge', 'leverage', 'ltv'], a: 'Bridge program bands: LTV up to 85%, LTC up to 85%, DSCR floor 1.10x, term up to 5 years, interest-only, recourse. Every bridge is priced on both channels — traditional table funding or a Centrifuge-structured tokenized pool (senior/junior 75/25 representative split).' },
     { k: ['permanent', 'perm'], a: 'Permanent: $3M–$50M, fixed 4.0–6.5%, LTV 75% / LTC 80%, DSCR floor 1.25x, 10-yr term over 30-yr amort. Recourse and non-recourse options. Both channels available.' },
-    { k: ['construction'], a: 'Construction: $2M–$50M, floating 7.0–12.0%, LTV 80% / LTC 80%, DSCR 1.20x stabilized, up to 5-yr term. Milestone-gated draws with inspection attestation; digital escrow variant releases from BitGo-custodied vaults on signed lien waiver.' },
+    { k: ['construction'], a: 'Construction: $2M–$50M, floating 7.0–12.0%, LTV 80% / LTC 80%, DSCR 1.20x stabilized, up to 5-yr term. Milestone-gated draws with inspection attestation; digital escrow variant releases from custodian-held escrow on a signed lien waiver.' },
     { k: ['cpace', 'c-pace', 'pace'], a: 'C-PACE: senior tax-assessment lien capped at 25% of value, up to 30 years fixed 6.0–8.0%, non-recourse. Best when there is qualifying scope (envelope, mechanicals, solar, water). Cheapest capital in the stack for energy-related work.' },
     { k: ['mezz', 'mezzanine', 'pref'], a: 'Mezz / Pref Equity: $1M–$10M, 12–20% coupon, combined LTV/LTC up to 85%, DSCR floor 1.05x on senior-plus-mezz stack. Recourse. Structured as custom tranches — clean fit for CMBS assumptions and sponsor buyouts.' },
     { k: ['sba', '7a', '7(a)'], a: 'SBA 7(a): up to $5M, Prime + 1.00–2.75%, LTV up to 95%, term up to 25 years, federal SBA guaranty. For owner-user commercial acquisition and construction; guaranteed strip is investor-transferable.' },
     { k: ['tokenized', 'pool', 'centrifuge'], a: 'Tokenized pools are structured on Centrifuge — the RWA protocol behind $1B+ in tokenized funds for managers like NYLIM. LDX loans get a senior share class sold to KYC-verified institutional investors and a junior first-loss retained by LDX. Senior yields typically 5–8% on a bridge or perm; junior sits at 20–30% of the stack. Same underwriting, faster capital.' },
-    { k: ['bitgo', 'custody'], a: 'Every deal settles through segregated vaults at BitGo Bank & Trust, N.A. — a federally chartered, OCC-regulated national trust bank. 2-of-3 multi-sig, whitelisted destinations, dual approvals, velocity limits, and $250M in custodial insurance. No single party can move funds.' },
+    { k: ['custody', 'custodian', 'vault'], a: 'Every deal settles through segregated accounts at a contracted qualified third-party custodian, held in the pool’s own name rather than ours. The controls are multi-signature approval, whitelisted destinations, dual authorisation and velocity limits, so no single party can move funds. The custodian for a given programme is named on that programme’s term sheet, along with its charter and insurance position — we do not publish one firm as a blanket claim across every deal.' },
     { k: ['stress'], a: 'Every LDX deal runs a three-scenario stress suite: income –10%, rate +200 bps, value –15%. A deal must clear the base case and stay marginal-or-better in stress to price. Failure is the product — published discipline is why senior capital accepts sub-8% yields on this paper.' },
-    { k: ['stablecoin', 'settlement'], a: 'Settlement stablecoin rails are in development on Unykorn\'s sovereign Rust ledger — deterministic, fully-reserved, issued through licensed partners for escrow, draws, and distributions. Not yet live for new closings; traditional and Centrifuge tokenized rails are both live today.' },
+    { k: ['stablecoin', 'settlement'], a: 'Settlement stablecoin rails are in development on Unykorn\'s self-operated Rust ledger — deterministic, fully-reserved, issued through licensed partners for escrow, draws, and distributions. Not yet live for new closings; traditional and Centrifuge tokenized rails are both live today.' },
     { k: ['pace vs mezz', 'cpace vs mezz'], a: 'C-PACE wins when: (1) there is qualifying energy scope, (2) the borrower wants cheaper capital than 12–20% mezz, (3) non-recourse matters. Mezz wins when: (1) no PACE-eligible scope, (2) leverage is needed above senior + PACE combined, (3) speed matters — PACE assessments have municipal cadence that mezz does not.' },
-    { k: ['fireblocks', 'anchorage'], a: 'BitGo Bank & Trust is our OCC-chartered custodian. Fireblocks and Anchorage are validated alternates for institutional counterparties that require them — either can be added to a deal\'s custody path without changing LDX pricing.' }
+    { k: ['fireblocks', 'anchorage', 'which custodian'], a: 'LDX is custodian-agnostic by design. The custody path is a requirement of the programme — segregated, third-party, in the pool\'s own name, multi-signature — and the firm that satisfies it is named on the term sheet for that deal. If an institutional counterparty requires a specific custodian they already use, it can be added to the custody path without changing LDX pricing.' }
   ];
 
   function answer(q) {
@@ -263,7 +263,7 @@
     byId('chatForm').dispatchEvent(new Event('submit', { cancelable: true }));
   }));
 
-  chatPush('Hi — I\'m the LDX credit copilot. Ask about our loan programs, stress methodology, tokenized pools, or the BitGo custody path. Enter a question below or tap a suggestion.', 'a');
+  chatPush('Hi — I\'m the LDX credit copilot. Ask about our loan programs, stress methodology, tokenized pools, or the a qualified custodian custody path. Enter a question below or tap a suggestion.', 'a');
 
   /* ---------- Account (localStorage) ---------- */
   const ACCT_KEY = 'ldx.acct';

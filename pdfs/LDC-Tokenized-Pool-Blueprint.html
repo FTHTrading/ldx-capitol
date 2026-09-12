@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>LDX Capital — Centrifuge / BitGo Platform Blueprint</title>
+<title>LDX Capital — Tokenized Pool Platform Blueprint</title>
 <link rel="stylesheet" href="_print.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
 </div>
 
 <div class="kicker">Technical Platform Blueprint</div>
-<h1>Centrifuge · BitGo · Underwriting Engine.</h1>
+<h1>Centrifuge · a qualified custodian · Underwriting Engine.</h1>
 <div class="sub">The full architecture LDX uses to originate, close, custody, and service CRE debt across tokenized capital markets.</div>
 
 <h2>1. Executive summary</h2>
@@ -31,10 +31,10 @@
 <div class="chart"><div class="s" style="width:75%">Senior 75% · 6.5% target yield</div><div class="j" style="width:25%">Junior 25% · LDX first-loss</div></div>
 <p class="caption">Bridge pool baseline — 65/35 to 90/10 by program.</p>
 
-<h2>3. Custody (BitGo Bank &amp; Trust, N.A.)</h2>
+<h2>3. Custody (Qualified third-party custodian)</h2>
 <table>
   <tr><th>Control</th><th>Configuration</th></tr>
-  <tr><td>Regulator</td><td>OCC-chartered national trust bank</td></tr>
+  <tr><td>Regulator</td><td>Named on the programme term sheet</td></tr>
   <tr><td>Signing scheme</td><td>2-of-3 multi-sig — cold, warm, HSM</td></tr>
   <tr><td>Address whitelist</td><td>Pre-approved counterparties only</td></tr>
   <tr><td>Approval policy</td><td>Dual approvals · velocity limits</td></tr>
@@ -69,7 +69,7 @@
   <li><strong>Collections tape</strong> — payment, escrow, and reserve movements per loan.</li>
   <li><strong>Covenant monitor</strong> — DSCR, LTV, and reserve triggers evaluated on receipt.</li>
   <li><strong>Cash trap</strong> — automatic diversion to senior when any covenant breaches.</li>
-  <li><strong>Distributions</strong> — computed by waterfall code, disbursed from BitGo vaults.</li>
+  <li><strong>Distributions</strong> — computed by waterfall code, disbursed from a qualified custodian vaults.</li>
 </ul>
 
 <h2>6. Underwriting engine &amp; stress methodology</h2>
@@ -94,7 +94,7 @@
 <ul>
   <li><strong>Reg D 506(c)</strong> for senior share class — verified accredited only, no general solicitation limits.</li>
   <li><strong>ERC-3643 permissioned securities</strong> — transfer restrictions enforced on-chain.</li>
-  <li><strong>BitGo Bank &amp; Trust custody</strong> — OCC-supervised qualified custodian.</li>
+  <li><strong>a qualified third-party custodian custody</strong> — OCC-supervised qualified custodian.</li>
   <li><strong>KYC/KYB and Travel Rule</strong> executed via Centrifuge whitelist + LDX intake.</li>
   <li><strong>State foreclosure law untouched</strong> — the underlying real property remedies are unchanged.</li>
 </ul>
@@ -106,7 +106,7 @@
   <li><strong>Term sheet.</strong> Same-day indicative pricing on both channels.</li>
   <li><strong>Underwriting.</strong> Full file assembled — appraisal, title, PFS, environmental.</li>
   <li><strong>Committee.</strong> LDX credit committee signs off; junior tranche sized.</li>
-  <li><strong>Pool subscription.</strong> Senior investors commit; capital cleared into BitGo vault.</li>
+  <li><strong>Pool subscription.</strong> Senior investors commit; capital cleared into a qualified custodian vault.</li>
   <li><strong>Closing.</strong> Note funded from vault; title recorded; loan tokenized into pool.</li>
   <li><strong>Servicing.</strong> Payments hit vault; waterfall executes; NAV updates live.</li>
   <li><strong>Exit.</strong> Loan pays off or refinances; pool receives payoff; distributions sweep.</li>
@@ -116,7 +116,7 @@
 <table>
   <tr><th>Partner</th><th>Interface</th><th>Purpose</th></tr>
   <tr><td>Centrifuge</td><td>Pool contracts + investor UI</td><td>Senior share issuance, NAV, secondary readiness</td></tr>
-  <tr><td>BitGo Bank &amp; Trust</td><td>Enterprise API + webhook</td><td>Vault, policy engine, insured custody</td></tr>
+  <tr><td>a qualified third-party custodian</td><td>Enterprise API + webhook</td><td>Vault, policy engine, insured custody</td></tr>
   <tr><td>Chainlink (optional)</td><td>Oracle feed</td><td>Rate index, price feed for stress scenarios</td></tr>
   <tr><td>Fireblocks / Anchorage</td><td>Alt custody</td><td>Counterparty custodial preferences</td></tr>
   <tr><td>Servicer of record</td><td>Loan-tape API</td><td>Payment, delinquency, escrow events</td></tr>
@@ -128,7 +128,7 @@
 
 <div class="footer">
   LDX Capital · 1651 Mt Vernon Rd, 2nd Floor · Dunwoody, GA 30338 · (770) 272-2232 · kevan@ldrcllc.com · <a href="https://ldrcllc.com">ldrcllc.com</a><br>
-  This blueprint is provided for informational purposes only and is not an offer to sell or a solicitation to buy any security. Digital securities described herein are offered exclusively under Reg D Rule 506(c) to verified accredited investors. Custody by BitGo Bank & Trust, N.A. Terms indicative and subject to change.
+  This blueprint is provided for informational purposes only and is not an offer to sell or a solicitation to buy any security. Digital securities described herein are offered exclusively under Reg D Rule 506(c) to verified accredited investors. Custody by Qualified third-party custodian Terms indicative and subject to change.
 </div>
 
 </body>

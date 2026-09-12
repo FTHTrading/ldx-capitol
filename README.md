@@ -13,7 +13,7 @@ Institutional commercial real estate credit across traditional and tokenized cap
 |---|---|
 | [`index.html`](./index.html) | Marketing site — programs, dual-rail explainer, tokenization stack, insights, downloads, contact |
 | [`app/`](./app/) | Installable PWA — credit-engine deal evaluator, stress suite, pipeline, copilot |
-| [`pdfs/`](./pdfs/) | Print-ready client docs (HTML → Print → Save as PDF): program charts, RWA briefing, Centrifuge/BitGo blueprint |
+| [`pdfs/`](./pdfs/) | Print-ready client docs (HTML → Print → Save as PDF): program charts, RWA briefing, Centrifuge/a qualified custodian blueprint |
 | [`icons/`](./icons/) | LDX brand marks (SVG + PNG) used across the site and PWA |
 
 ## The app
@@ -53,4 +53,4 @@ Dashboard path: **Workers & Pages → Create → Pages → Connect to Git → pi
 
 ## Regulatory
 
-Digital securities described on this site are offered exclusively under Regulation D Rule 506(c) to verified accredited investors. Digital-asset custody by BitGo Bank & Trust, N.A. All loans subject to underwriting, documentation, and credit approval. Terms indicative and subject to change.
+Digital securities described on this site are offered exclusively under Regulation D Rule 506(c) to verified accredited investors. Digital-asset custody by Qualified third-party custodian All loans subject to underwriting, documentation, and credit approval. Terms indicative and subject to change.
