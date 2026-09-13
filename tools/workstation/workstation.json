@@ -1,0 +1,26 @@
+{
+  "root": "C:\\Unykorn",
+  "tree": {
+    "00_INBOX":      "single landing zone; triage weekly; nothing lives here longer than a sprint",
+    "10_PLATFORMS":  "every git repository: portal, ldx-capitol, xrpl hooks, L1 engine, ERC-3643, tooling",
+    "20_CLIENTS":    "active client and deal work, one folder per client; closed matters go to a vault or 90_ARCHIVE",
+    "30_DOCS":       "developer docs as a git repo: architecture, ADRs, runbooks, playbooks, generated INDEX.md",
+    "40_VAULTS":     "hash-verified evidence vaults and their mirrors (MASTER_LD_CAPITAL_AUDIT_VAULT, future matters)",
+    "50_TOOLS":      "local tooling: scripts, Ollama models, wrangler configs, keys manifest (never the keys)",
+    "60_MEDIA":      "renders, video and audio masters, brand assets by project",
+    "90_ARCHIVE":    "cold storage, dated subfolders, never edited in place"
+  },
+  "repoDest": "10_PLATFORMS",
+  "rules": [
+    { "match": "(?i)^(client|clients|client_deals|deals|customers)$",             "dest": "20_CLIENTS",  "reason": "client work" },
+    { "match": "(?i)(legal-repo|legal|contracts?)$",                               "dest": "20_CLIENTS",  "reason": "deal legal" },
+    { "match": "(?i)^(docs?|documentation|wiki|notes|adr|runbooks?)$",             "dest": "30_DOCS",     "reason": "documentation" },
+    { "match": "(?i)vault|evidence|audit",                                         "dest": "40_VAULTS",   "reason": "evidence" },
+    { "match": "(?i)^(tools?|scripts?|bin|utils?|ollama|models)$",                 "dest": "50_TOOLS",    "reason": "tooling" },
+    { "match": "(?i)^(renders?|video|videos|audio|media|brand|assets|blender)$",   "dest": "60_MEDIA",    "reason": "media" },
+    { "match": "(?i)^(dev|source|src|repos|projects|code|platforms|blockchain)$",  "dest": "10_PLATFORMS","reason": "code container; repos inside are relocated individually" }
+  ],
+  "protected": [ "AppData", "Application Data", "OneDrive*", ".*", "Desktop", "Documents", "Downloads", "Pictures", "Videos", "Music", "Favorites", "Links", "Searches", "Saved Games", "Contacts", "3D Objects", "Unykorn", "WORKSTATION_AUDIT*" ],
+  "staleDays": 180,
+  "reclaimable": [ "node_modules", "target", ".venv", "venv", "dist", "build", ".next", "__pycache__", ".cache", ".wrangler", "bin", "obj" ]
+}
