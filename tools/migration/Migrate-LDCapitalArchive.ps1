@@ -9,8 +9,8 @@
 
         <SanDisk>:\LD_Capital_Complete_Archive\<Category>\<original sub-path>\<file>
 
-    Categories: Decks, Legal_and_RegD, SmartContracts, FinancialModels, Media, Architecture_Docs, Archives,
-    Documents, Repos, Other.
+    Categories: Business_Plans, Operating_Manuals, Data_Room, Decks, Legal_and_RegD, SmartContracts,
+    FinancialModels, Media, Architecture_Docs, Archives, Documents, Repos, Other.
 
     Every file is SHA-256 hashed at the source and re-hashed at the destination before it is counted as
     archived. In -Mode Move the source is deleted only after that verification passes. Re-running is
@@ -21,6 +21,8 @@
         manifest.txt         human-readable manifest (date, size, SHA-256, category, archive path, source path)
         manifest.csv         same rows, machine-readable
         manifest.json        same rows plus run metadata (input to Verify-LDCapitalArchive.ps1)
+        SHA256SUMS.txt       sha256sum-compatible digest list for the whole archive
+        README.txt           layout and provenance notes for whoever opens the drive later
         migration-log.jsonl  append-only, hash-chained run log (one line per file event, never rewritten)
 
 .PARAMETER SourcePath
@@ -32,6 +34,10 @@
 
 .PARAMETER Pattern
     Case-insensitive regexes matched against file names and path segments to decide scope.
+
+.PARAMETER Priority
+    Regexes for must-have assets. Each is added to the scope match, and the manifest header reports FOUND or
+    MISSING for every entry so a gap in the archive is visible before the drive leaves the desk.
 
 .PARAMETER RepoRoot
     Folders scanned (3 levels deep) for git repositories that look like LDX repositories.
@@ -86,6 +92,22 @@ param(
         'UNYKORN[ _\-]?LDX'
     ),
 
+    [string[]]$Priority = @(
+        'LDX[ _\-]?Capital[ _\-]?Business[ _\-]?Plan',
+        'LDX[ _\-]?ENTERPRISE[ _\-]?OPERATING[ _\-]?MANUAL',
+        'LD[ _\-]?Capital[ _\-]?Build[ _\-]?Verification[ _\-]?Deck',
+        'LD[ _\-]?Capital[ _\-]?M[ _\-]?Helen[ _\-]?Data[ _\-]?Room[ _\-]?Master[ _\-]?Index',
+        'LD[ _\-]?Capital[ _\-]?Language[ _\-]?Compliance[ _\-]?Addendum',
+        'M[ _\-]?Helen[ _\-]?Hotel[ _\-]?SPV',
+        'UNYKORN[ _\-]?LLC[ _\-]?Executive[ _\-]?Overview[ _\-]?Deck',
+        'Unykorn[ _\-]?Monetization[ _\-]?Architecture[ _\-]?Deck',
+        'Unykorn[ _\-]?7777[ _\-]?Institutional[ _\-]?Bank[ _\-]?Presentation',
+        'LDX[ _\-]?MASTER[ _\-]?SYSTEM',
+        'UNYKORN[ _\-]?LDX[ _\-]?WhiteLabel[ _\-]?Command[ _\-]?Pack',
+        'ldxcore',
+        'BUILD[ _\-]?PROOF'
+    ),
+
     [string[]]$RepoRoot = @(
         "C:\Users\Kevan\source",
         "C:\Users\Kevan\source\repos",
@@ -133,8 +155,12 @@ foreach ($d in $ExcludeDir) { [void]$script:ExcludeSet.Add($d) }
 $script:IncludeSet = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
 foreach ($d in $IncludeFolder) { [void]$script:IncludeSet.Add($d) }
 $script:PatternRegex = New-Object System.Text.RegularExpressions.Regex(
-    ('(' + ($Pattern -join ')|(') + ')'),
+    ('(' + ((@($Pattern) + @($Priority)) -join ')|(') + ')'),
     [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+$script:PriorityRegex = @()
+foreach ($pr in $Priority) {
+    $script:PriorityRegex += New-Object System.Text.RegularExpressions.Regex($pr, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+}
 
 function Write-Status {
     param([string]$Message, [ConsoleColor]$Color = [ConsoleColor]::Gray)
@@ -297,6 +323,9 @@ $script:ExtDocText   = @('.md', '.mdx', '.txt', '.rtf', '.adoc')
 $script:ExtDocData   = @('.json', '.yaml', '.yml', '.toml')
 $script:ExtDocOffice = @('.pdf', '.docx', '.doc', '.odt', '.pages')
 
+$script:RxPlan   = [regex]'(?i)business[ _\-]?plan|strategic[ _\-]?plan|executive[ _\-]?summary'
+$script:RxManual = [regex]'(?i)operating[ _\-]?manual|operations[ _\-]?manual|\bmanual\b|handbook|\bsop\b|standard[ _\-]?operating'
+$script:RxRoom   = [regex]'(?i)data[ _\-]?room|master[ _\-]?index|due[ _\-]?diligence|\bdd[ _\-]?(pack|package|index|checklist)|diligence'
 $script:RxLegal = [regex]'(?i)reg[ _\-]?d\b|506\(?c\)?|\bppm\b|private[ _\-]?placement|subscription|operating[ _\-]?agreement|\bnda\b|non[ _\-]?disclosure|term[ _\-]?sheet|\bloi\b|\bmou\b|agreement|contract(?!s?\.(sol|rs|c)\b)|legal|\bkyc\b|\baml\b|accredit|offering|memorandum|counsel|compliance|indemn|engagement[ _\-]?letter|articles|bylaws|resolution|\bw-?9\b|form[ _\-]?d\b'
 $script:RxModel = [regex]'(?i)model|waterfall|pro[ _\-]?forma|underwrit|\bdscr\b|\bltv\b|\bltc\b|budget|cap[ _\-]?table|financial|projection|forecast|sources[ _\-]?(and|&)[ _\-]?uses|rent[ _\-]?roll|\bnoi\b|amort|sizing|pricing'
 $script:RxCode  = [regex]'(?i)hook|smart[ _\-]?contract|\berc[ _\-]?\d|3643|t-?rex|onchainid|\bmpt\b|solidity|hardhat|foundry|wasm'
@@ -310,9 +339,13 @@ function Get-ArchiveCategory {
     if ($script:ExtCode -contains $ext)          { return 'SmartContracts' }
     if ($script:ExtMedia -contains $ext)         { return 'Media' }
     if ($script:ExtArchive -contains $ext)       { return 'Archives' }
+
+    if ($script:RxPlan.IsMatch($RelativePath))   { return 'Business_Plans' }
+    if ($script:RxManual.IsMatch($RelativePath)) { return 'Operating_Manuals' }
+    if ($script:RxRoom.IsMatch($RelativePath))   { return 'Data_Room' }
+
     if ($script:ExtSheet -contains $ext)         { return 'FinancialModels' }
     if ($script:ExtDeck -contains $ext)          { return 'Decks' }
-
     if ($script:RxLegal.IsMatch($RelativePath))  { return 'Legal_and_RegD' }
     if ($script:RxModel.IsMatch($RelativePath))  { return 'FinancialModels' }
     if ($script:RxCode.IsMatch($RelativePath))   { return 'SmartContracts' }
@@ -785,7 +818,72 @@ foreach ($g in $byCat) {
     }
     [void]$sb.AppendLine("")
 }
+# priority checklist
+$priorityReport = @()
+foreach ($rx in $script:PriorityRegex) {
+    $hits = @($sortedRows | Where-Object { $_.Status -ne 'Failed' -and $rx.IsMatch([System.IO.Path]::GetFileName($_.ArchivePath)) })
+    $priorityReport += [pscustomobject]@{ Pattern = $rx.ToString(); Found = $hits.Count; Example = $(if ($hits.Count) { $hits[0].ArchivePath } else { '' }) }
+}
+if ($priorityReport.Count) {
+    [void]$sb.AppendLine("[Priority checklist]")
+    foreach ($pr in $priorityReport) {
+        $mark = if ($pr.Found) { 'FOUND  ' } else { 'MISSING' }
+        [void]$sb.AppendLine(("  {0}  {1,-70}  {2}" -f $mark, $pr.Pattern, $(if ($pr.Found) { "{0} file(s), e.g. {1}" -f $pr.Found, $pr.Example } else { '' })))
+    }
+    [void]$sb.AppendLine("")
+}
 [System.IO.File]::WriteAllText($manifestTxt, $sb.ToString(), $script:Utf8NoBom)
+
+# sha256sum-compatible digest list (verify on any platform with: sha256sum -c SHA256SUMS.txt)
+$sums = New-Object System.Text.StringBuilder
+foreach ($r in $sortedRows) {
+    if ($r.Status -in @('Copied', 'Moved', 'Duplicate', 'Archived') -and $r.Sha256) {
+        [void]$sums.Append($r.Sha256).Append('  ').Append(([string]$r.ArchivePath).Replace('\', '/')).Append("`n")
+    }
+}
+[System.IO.File]::WriteAllText((Join-Path $manifestDir 'SHA256SUMS.txt'), $sums.ToString(), $script:Utf8NoBom)
+
+# archive README
+$readme = @"
+LD Capital / LDX Complete Archive
+=================================
+
+Consolidated record set for LD Capital, LDX, M Helen and Kiwi's Mulligan, assembled from the
+FTH Trading OneDrive download tree and local LDX repositories by Migrate-LDCapitalArchive.ps1
+(FTHTrading/ldx-capitol, tools/migration). Files are byte-identical to their sources; nothing is
+renamed except same-name collisions, which carry a ~<8-char-sha256> suffix.
+
+Last run   : $runId  ($($runEnd.ToUniversalTime().ToString('yyyy-MM-dd HH:mm:ss')) UTC, host $([System.Environment]::MachineName))
+Files      : $($archivedRows.Count)  ($(Format-Bytes $archivedBytes))
+
+Layout
+  Business_Plans/      business and strategic plans, executive summaries
+  Operating_Manuals/   operating manuals, handbooks, SOPs
+  Data_Room/           data-room indexes and due-diligence packages
+  Decks/               investor, bank and partner presentations
+  Legal_and_RegD/      Reg D 506(c), PPM, subscription, operating agreements, NDAs, term sheets, compliance
+  SmartContracts/      Solidity, Rust, XRPL Hook sources and contract-related documents
+  FinancialModels/     spreadsheets, waterfalls, pro formas, underwriting, cap tables
+  Media/               video, audio, images, design sources
+  Architecture_Docs/   markdown, specs, whitepapers, command packs, system documents
+  Archives/            zip / 7z / tar bundles
+  Documents/           other PDF and Word documents
+  Repos/<name>/        repository files with their original tree
+  Other/               in-scope files with no better home
+  Inside each folder the original sub-path under the source root is preserved.
+
+Integrity
+  manifest.txt         human-readable inventory: date, size, SHA-256, status, archive path, source path
+  manifest.csv         the same rows for Excel
+  manifest.json        the same rows plus run metadata; cumulative across runs
+  SHA256SUMS.txt       verify anywhere:  sha256sum -c SHA256SUMS.txt   (from this folder)
+  migration-log.jsonl  append-only, hash-chained log of every run; do not edit
+  Verify-LDCapitalArchive.ps1 (in the repo) re-hashes everything and validates the chain.
+
+Keep a second copy of this folder on cloud storage. The SHA-256 list is what makes the two copies
+provably identical.
+"@
+[System.IO.File]::WriteAllText((Join-Path $manifestDir 'README.txt'), $readme, $script:Utf8NoBom)
 
 $sortedRows | Export-Csv -LiteralPath $manifestCsv -NoTypeInformation -Encoding UTF8
 
@@ -821,6 +919,13 @@ foreach ($k in @($counts.Keys)) {
     }
 }
 Write-Status ("  {0,-18} {1}" -f 'Archived bytes', (Format-Bytes $archivedBytes)) Green
+$missingPriority = @($priorityReport | Where-Object { -not $_.Found })
+if ($missingPriority.Count) {
+    Write-Status ("  {0,-18} {1} of {2} priority pattern(s) not found:" -f 'Priority', $missingPriority.Count, $priorityReport.Count) Yellow
+    foreach ($m in $missingPriority) { Write-Status ("      {0}" -f $m.Pattern) Yellow }
+} elseif ($priorityReport.Count) {
+    Write-Status ("  {0,-18} all {1} present" -f 'Priority', $priorityReport.Count) Green
+}
 Write-Status "Manifest: $manifestTxt" Cyan
 if (-not $DryRun) { Write-Status "Chain log: $($script:LogPath)" Cyan }
 
