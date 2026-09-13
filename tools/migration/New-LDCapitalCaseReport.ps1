@@ -75,7 +75,7 @@ function Get-Workstream {
     if ($tags.Count -eq 0) { return 'Unclassified' }
     return ($tags -join ' | ')
 }
-function Import-CsvIfPresent { param([string]$Path) if (Test-Path -LiteralPath $Path -PathType Leaf) { return @(Import-Csv -LiteralPath $Path) }; return @() }
+function Import-CsvIfPresent { param([string]$Path) if (Test-Path -LiteralPath $Path -PathType Leaf) { return @(Import-Csv -LiteralPath $Path -Encoding UTF8) }; return @() }
 function Md-Escape { param([string]$s) return ([string]$s).Replace('|', '\|').Replace("`r", '').Replace("`n", ' ') }
 
 # --- locate archive
@@ -108,7 +108,7 @@ $script:WorkstreamMap = [ordered]@{
     'Software'               = '(?i)rust|crate|cargo|solidity|contract|hook|wasm'
 }
 if (Test-Path -LiteralPath $CaseFile -PathType Leaf) {
-    $case = Get-Content -LiteralPath $CaseFile -Raw | ConvertFrom-Json
+    $case = Get-Content -LiteralPath $CaseFile -Raw -Encoding UTF8 | ConvertFrom-Json
     $counterparty = @(Get-Prop $case 'counterpartyDomains' | Where-Object { $_ } | ForEach-Object { $_.ToLowerInvariant() })
     $ourDomains = @(Get-Prop $case 'ourDomains' | Where-Object { $_ } | ForEach-Object { $_.ToLowerInvariant() })
     $ws = Get-Prop $case 'workstreams'
@@ -127,7 +127,7 @@ $now = (Get-Date).ToUniversalTime()
 # =====================================================================================================
 # Load inputs
 # =====================================================================================================
-$manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+$manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $files = @($manifest.files | Where-Object { $_.Status -in @('Copied', 'Moved', 'Duplicate', 'Indexed', 'Archived') })
 $exports = @(Get-ChildItem -LiteralPath $Archive -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like '09_M365_EXPORT_*' } | Sort-Object Name)
 $emails = @(); $sharedOut = @(); $sharedWithMe = @(); $siteHits = @()
@@ -144,8 +144,8 @@ $emails = @($emailById.Values)
 
 $chain = @(); $logPath = Join-Path $Archive 'migration-log.jsonl'
 if (Test-Path -LiteralPath $logPath -PathType Leaf) { foreach ($line in [System.IO.File]::ReadLines($logPath)) { if ($line.Trim()) { try { $chain += ($line | ConvertFrom-Json) } catch { } } } }
-$merkle = $null; $mp = Join-Path $Archive 'merkle.json'; if (Test-Path -LiteralPath $mp -PathType Leaf) { $merkle = Get-Content -LiteralPath $mp -Raw | ConvertFrom-Json }
-$anchor = $null; $ap = Join-Path $Archive 'anchor-receipt.json'; if (Test-Path -LiteralPath $ap -PathType Leaf) { $anchor = Get-Content -LiteralPath $ap -Raw | ConvertFrom-Json }
+$merkle = $null; $mp = Join-Path $Archive 'merkle.json'; if (Test-Path -LiteralPath $mp -PathType Leaf) { $merkle = Get-Content -LiteralPath $mp -Raw -Encoding UTF8 | ConvertFrom-Json }
+$anchor = $null; $ap = Join-Path $Archive 'anchor-receipt.json'; if (Test-Path -LiteralPath $ap -PathType Leaf) { $anchor = Get-Content -LiteralPath $ap -Raw -Encoding UTF8 | ConvertFrom-Json }
 
 # =====================================================================================================
 # 1. What we have

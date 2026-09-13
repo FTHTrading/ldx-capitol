@@ -46,11 +46,16 @@ param(
     [string]$Collection = "LD Capital Complete Archive",
     [string]$OutputDir,
     [string]$VerifyProof,
-    [switch]$VerifyAll
+    [switch]$VerifyAll,
+
+    [switch]$NoProgress
 )
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
+# Write-Progress is slow or invisible under a redirected or non-console host (an IDE task runner, a scheduled
+# task, a pipe). Silence it there and whenever -NoProgress is given; the per-run summary is unaffected.
+if ($NoProgress -or $Host.Name -notmatch 'ConsoleHost|Visual Studio Code Host' -or -not [Environment]::UserInteractive) { $ProgressPreference = 'SilentlyContinue' }
 
 $onWindows = $true
 if (Test-Path variable:IsWindows) { $onWindows = [bool]$IsWindows }
@@ -135,7 +140,7 @@ function Add-ChainLogEvent {
     param([string]$LogPath, [hashtable]$Event)
     $prev = ('0' * 64)
     if (Test-Path -LiteralPath $LogPath -PathType Leaf) {
-        $last = Get-Content -LiteralPath $LogPath -Tail 1 -ErrorAction SilentlyContinue
+        $last = Get-Content -LiteralPath $LogPath -Tail 1 -Encoding UTF8 -ErrorAction SilentlyContinue
         if ($last) { try { $prev = [string](($last | ConvertFrom-Json).hash) } catch { } }
     }
     $ordered = [ordered]@{ ts = (Get-Date).ToUniversalTime().ToString('o'); prev = $prev }
@@ -169,7 +174,7 @@ if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) { Write-Host "ma
 # --- verify modes
 if ($VerifyProof -or $VerifyAll) {
     if (-not (Test-Path -LiteralPath $merklePath -PathType Leaf)) { Write-Host "merkle.json not found at $merklePath; build first." -ForegroundColor Red; exit 3 }
-    $m = Get-Content -LiteralPath $merklePath -Raw | ConvertFrom-Json
+    $m = Get-Content -LiteralPath $merklePath -Raw -Encoding UTF8 | ConvertFrom-Json
     if ($VerifyProof) {
         $key = $VerifyProof.Replace('\', '/')
         $entry = @($m.leaves | Where-Object { $_.path -eq $key })
@@ -208,7 +213,7 @@ if ($VerifyProof -or $VerifyAll) {
 }
 
 # --- build
-$manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+$manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $rows = @($manifest.files | Where-Object { $_.Status -in @('Copied', 'Moved', 'Duplicate', 'Indexed', 'Archived') -and $_.Sha256 })
 $byPath = @{}
 foreach ($r in $rows) {

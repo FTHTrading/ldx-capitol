@@ -97,7 +97,7 @@ if (-not (Test-Path -LiteralPath $CaseFile -PathType Leaf)) {
     Write-Host "Create it (outside git) with searchTerms, counterpartyDomains, since, until. See the script header." -ForegroundColor Yellow
     exit 3
 }
-$case = Get-Content -LiteralPath $CaseFile -Raw | ConvertFrom-Json
+$case = Get-Content -LiteralPath $CaseFile -Raw -Encoding UTF8 | ConvertFrom-Json
 $SearchTerm = @(Get-Prop $case 'searchTerms' | Where-Object { $_ })
 $CounterpartyDomain = @(Get-Prop $case 'counterpartyDomains' | Where-Object { $_ } | ForEach-Object { $_.ToLowerInvariant() })
 $Since = if (Get-Prop $case 'since') { [datetime](Get-Prop $case 'since') } else { [datetime]'2026-01-01' }

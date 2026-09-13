@@ -21,6 +21,10 @@
 .PARAMETER DryRun
     List what would be copied; write nothing.
 
+.PARAMETER Prune
+    Delete files in the mirror that are neither in the archive manifest nor control files (left behind by a
+    rename in the archive). Without -Prune they are only listed as EXTRA.
+
 .EXAMPLE
     .\Mirror-LDCapitalArchive.ps1 -Archive "D:\MASTER_LD_CAPITAL_AUDIT_VAULT" -Mirror "C:\Users\Kevan\OneDrive - FTH Trading\MASTER_LD_CAPITAL_AUDIT_VAULT"
 #>
@@ -29,11 +33,18 @@ param(
     [string]$Archive,
     [string[]]$ArchiveFolderName = @("MASTER_LD_CAPITAL_AUDIT_VAULT", "LD_Capital_Complete_Archive"),
     [Parameter(Mandatory = $true)][string]$Mirror,
-    [switch]$DryRun
+    [switch]$DryRun,
+
+    [switch]$Prune,
+
+    [switch]$NoProgress
 )
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
+# Write-Progress is slow or invisible under a redirected or non-console host (an IDE task runner, a scheduled
+# task, a pipe). Silence it there and whenever -NoProgress is given; the per-run summary is unaffected.
+if ($NoProgress -or $Host.Name -notmatch 'ConsoleHost|Visual Studio Code Host' -or -not [Environment]::UserInteractive) { $ProgressPreference = 'SilentlyContinue' }
 
 $onWindows = $true
 if (Test-Path variable:IsWindows) { $onWindows = [bool]$IsWindows }
@@ -73,7 +84,7 @@ $manifestPath = Join-Path $Archive 'manifest.json'
 if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
     Write-Host "manifest.json not found at $manifestPath. Run Migrate-LDCapitalArchive.ps1 -IndexOnly -Destination '$Archive' first." -ForegroundColor Red; exit 3
 }
-$manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+$manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $files = @($manifest.files | Where-Object { $_.Status -in @('Copied', 'Moved', 'Duplicate', 'Indexed', 'Archived') })
 
 # work list: manifest rows (with expected hash) + control files present at the archive root (hashed on the fly)
@@ -125,6 +136,27 @@ foreach ($w in $work) {
 }
 Write-Progress -Activity 'Mirroring' -Completed
 
+# files in the mirror that the archive record does not account for
+$wanted = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+foreach ($w in $work) { [void]$wanted.Add($w.Rel.Replace('\\', '/')) }
+[void]$wanted.Add('mirror-receipt.json')
+$extras = @()
+if (Test-Path -LiteralPath $Mirror -PathType Container) {
+    foreach ($f in @(Get-ChildItem -LiteralPath $Mirror -File -Recurse -Force -ErrorAction SilentlyContinue)) {
+        $rel = $f.FullName.Substring($Mirror.Length).TrimStart('\', '/').Replace('\', '/')
+        if (-not $wanted.Contains($rel)) { $extras += $rel }
+    }
+}
+$pruned = 0
+if ($extras.Count) {
+    Write-Host ("  EXTRA in mirror {0} (not in the archive record)" -f $extras.Count) -ForegroundColor Yellow
+    foreach ($x in $extras) {
+        if ($Prune -and -not $DryRun) { Remove-Item -LiteralPath (Join-Path $Mirror $x) -Force; $pruned++; Write-Host "    removed $x" -ForegroundColor Yellow }
+        else { Write-Host "    $x" -ForegroundColor Yellow }
+    }
+    if (-not $Prune) { Write-Host "  re-run with -Prune to delete them" -ForegroundColor Yellow }
+}
+
 Write-Host ("  copied    {0}" -f $copied) -ForegroundColor Green
 Write-Host ("  unchanged {0}" -f $skipped) -ForegroundColor Green
 if ($missing.Count) { Write-Host ("  MISSING at source {0}" -f $missing.Count) -ForegroundColor Red; $missing | ForEach-Object { Write-Host "    $_" -ForegroundColor Red } }
@@ -142,6 +174,8 @@ if (-not $DryRun) {
         unchanged = $skipped
         missing = $missing
         failed = $failed
+        extras = $extras
+        pruned = $pruned
         completed = (Get-Date).ToUniversalTime().ToString('o')
         host = [System.Environment]::MachineName
     }

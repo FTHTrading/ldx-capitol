@@ -159,16 +159,21 @@ param(
 
     [string]$CaseFile,
 
-    [switch]$DryRun
+    [switch]$DryRun,
+
+    [switch]$NoProgress
 )
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
+# Write-Progress is slow or invisible under a redirected or non-console host (an IDE task runner, a scheduled
+# task, a pipe). Silence it there and whenever -NoProgress is given; the per-run summary is unaffected.
+if ($NoProgress -or $Host.Name -notmatch 'ConsoleHost|Visual Studio Code Host' -or -not [Environment]::UserInteractive) { $ProgressPreference = 'SilentlyContinue' }
 
 # --- presets and case terms (applied before anything is compiled)
 if ($CaseFile) {
     if (-not (Test-Path -LiteralPath $CaseFile -PathType Leaf)) { Write-Host "Case file not found: $CaseFile" -ForegroundColor Red; exit 3 }
-    $caseObj = Get-Content -LiteralPath $CaseFile -Raw | ConvertFrom-Json
+    $caseObj = Get-Content -LiteralPath $CaseFile -Raw -Encoding UTF8 | ConvertFrom-Json
     $caseTerms = @($caseObj.PSObject.Properties['searchTerms'].Value | Where-Object { $_ })
     foreach ($t in $caseTerms) { $Pattern += [regex]::Escape([string]$t).Replace('\ ', '[ _\-]?') }
 }
@@ -578,7 +583,7 @@ function Initialize-ChainLog {
     param([string]$Path)
     $script:LogPath = $Path
     if (Test-Path -LiteralPath $Path -PathType Leaf) {
-        $last = Get-Content -LiteralPath $Path -Tail 1 -ErrorAction SilentlyContinue
+        $last = Get-Content -LiteralPath $Path -Tail 1 -Encoding UTF8 -ErrorAction SilentlyContinue
         if ($last) {
             try {
                 $obj = $last | ConvertFrom-Json
@@ -846,7 +851,7 @@ $manifestJson = Join-Path $manifestDir 'manifest.json'
 $carried = 0
 if (-not $DryRun -and (Test-Path -LiteralPath $manifestJson -PathType Leaf)) {
     try {
-        $prior = Get-Content -LiteralPath $manifestJson -Raw | ConvertFrom-Json
+        $prior = Get-Content -LiteralPath $manifestJson -Raw -Encoding UTF8 | ConvertFrom-Json
         $current = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
         foreach ($r in $rows) { [void]$current.Add([string]$r.ArchivePath) }
         foreach ($pf in @($prior.files)) {

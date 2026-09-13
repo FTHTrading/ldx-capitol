@@ -23,11 +23,16 @@
 param(
     [string]$Archive,
     [string[]]$ArchiveFolderName = @("MASTER_LD_CAPITAL_AUDIT_VAULT", "LD_Capital_Complete_Archive"),
-    [switch]$SkipLog
+    [switch]$SkipLog,
+
+    [switch]$NoProgress
 )
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
+# Write-Progress is slow or invisible under a redirected or non-console host (an IDE task runner, a scheduled
+# task, a pipe). Silence it there and whenever -NoProgress is given; the per-run summary is unaffected.
+if ($NoProgress -or $Host.Name -notmatch 'ConsoleHost|Visual Studio Code Host' -or -not [Environment]::UserInteractive) { $ProgressPreference = 'SilentlyContinue' }
 
 $onWindows = $true
 if (Test-Path variable:IsWindows) { $onWindows = [bool]$IsWindows }
@@ -68,7 +73,7 @@ if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
     exit 3
 }
 
-$manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+$manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $files = @($manifest.files | Where-Object { $_.Status -in @('Copied', 'Moved', 'Duplicate', 'Indexed', 'Archived') })
 Write-Host ("Verifying {0} archived file(s) from run {1} ({2})" -f $files.Count, $manifest.runId, $manifest.generated) -ForegroundColor White
 
