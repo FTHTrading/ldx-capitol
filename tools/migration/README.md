@@ -10,6 +10,31 @@ and an append-only chained log. Windows PowerShell 5.1 and PowerShell 7 are both
 | `Verify-LDCapitalArchive.ps1` | Re-hash the archive against `manifest.json` and validate the log chain |
 | `Build-LDCapitalMerkle.ps1` | Merkle tree over the manifest: root, per-file inclusion proofs, XRPL anchor payload |
 | `anchor/xrpl-anchor.mjs` | Anchor the root on the XRP Ledger behind an explicit `--yes` gate; verify an anchor later |
+| `Mirror-LDCapitalArchive.ps1` | Byte-verified second copy of the whole archive, tree preserved, to a sync folder, NAS or second drive |
+
+## Adopting an archive that already exists
+
+If the vault was assembled by other means (for example `D:\MASTER_LD_CAPITAL_AUDIT_VAULT` with its own
+`00_…`/`08_…` layout), do not re-migrate it. Index it in place, then run the same integrity chain over it:
+
+```powershell
+cd <clone>\tools\migration
+# 1. Hash every file where it sits; writes manifest.*, SHA256SUMS.txt, chain log. Nothing is moved or renamed.
+powershell -ExecutionPolicy Bypass -File .\Migrate-LDCapitalArchive.ps1 -Destination "D:\MASTER_LD_CAPITAL_AUDIT_VAULT" -IndexOnly
+
+# 2. Second copy, verified byte for byte. Do this before anything else touches the stick.
+powershell -ExecutionPolicy Bypass -File .\Mirror-LDCapitalArchive.ps1 -Archive "D:\MASTER_LD_CAPITAL_AUDIT_VAULT" -Mirror "C:\Users\Kevan\OneDrive - FTH Trading\MASTER_LD_CAPITAL_AUDIT_VAULT"
+
+# 3. Merkle root + anchor payload, then the XRPL anchor (see below).
+powershell -ExecutionPolicy Bypass -File .\Build-LDCapitalMerkle.ps1 -Archive "D:\MASTER_LD_CAPITAL_AUDIT_VAULT" -Collection "MASTER_LD_CAPITAL_AUDIT_VAULT"
+
+# 4. Any later day, on either copy:
+powershell -ExecutionPolicy Bypass -File .\Verify-LDCapitalArchive.ps1 -Archive "D:\MASTER_LD_CAPITAL_AUDIT_VAULT"
+```
+
+Index mode records each file with Status `Indexed` and Category = its top-level folder, skips the control
+files it writes itself, and leaves an existing `README.txt` alone. The verifier, Merkle builder and mirror all
+auto-detect either `MASTER_LD_CAPITAL_AUDIT_VAULT` or `LD_Capital_Complete_Archive` on a removable volume.
 
 ## Quick start
 
@@ -145,6 +170,7 @@ in `Data_Room`.
 | 3 | no SanDisk or USB removable volume detected and no `-Destination` given / manifest missing |
 | 4 | insufficient free space on the destination |
 | 5 | verifier: log chain broken |
+| 4 (mirror) | mirror path is inside the archive, or insufficient space |
 
 ## Parameters
 
@@ -161,4 +187,5 @@ in `Data_Room`.
 | `-Mode` | `Copy` | `Move` deletes verified sources |
 | `-SkipCloudOnly` | off | skip un-hydrated OneDrive placeholders |
 | `-NoHash` | off | size-only verification (not recommended with `Move`) |
+| `-IndexOnly` | off | adopt the existing tree under `-Destination`; hash and record in place, copy nothing |
 | `-DryRun` | off | plan only, destination untouched |

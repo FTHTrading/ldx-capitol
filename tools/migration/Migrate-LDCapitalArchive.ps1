@@ -60,6 +60,12 @@
 .PARAMETER NoHash
     Skip SHA-256 (size + timestamp verification only). Not recommended for Move.
 
+.PARAMETER IndexOnly
+    Adopt an existing archive in place: no sources are read or copied. Every file already under -Destination
+    is hashed and recorded (Status "Indexed", Category = its top-level folder) so manifest.json, SHA256SUMS.txt
+    and the chain log describe the tree exactly as it is. Use this on a vault assembled by other means before
+    running Verify-, Build-LDCapitalMerkle- and Mirror-LDCapitalArchive.ps1.
+
 .PARAMETER DryRun
     Enumerate, classify and write the manifest to a temp folder; the destination is never touched.
 
@@ -71,6 +77,9 @@
 
 .EXAMPLE
     .\Migrate-LDCapitalArchive.ps1 -Mode Move -RepoFullCopy
+
+.EXAMPLE
+    .\Migrate-LDCapitalArchive.ps1 -Destination "D:\MASTER_LD_CAPITAL_AUDIT_VAULT" -IndexOnly
 #>
 [CmdletBinding()]
 param(
@@ -134,6 +143,8 @@ param(
 
     [switch]$NoHash,
 
+    [switch]$IndexOnly,
+
     [switch]$DryRun
 )
 
@@ -161,6 +172,10 @@ $script:PriorityRegex = @()
 foreach ($pr in $Priority) {
     $script:PriorityRegex += New-Object System.Text.RegularExpressions.Regex($pr, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
 }
+
+$script:ControlFiles = @('manifest.txt', 'manifest.csv', 'manifest.json', 'SHA256SUMS.txt', 'README.txt',
+                         'migration-log.jsonl', 'merkle.json', 'merkle-root.txt', 'anchor-payload.json',
+                         'anchor-receipt.json', 'mirror-receipt.json')
 
 function Write-Status {
     param([string]$Message, [ConsoleColor]$Color = [ConsoleColor]::Gray)
@@ -551,7 +566,7 @@ function Write-ChainLog {
 
 $runStart = Get-Date
 $runId = [guid]::NewGuid().ToString('N').Substring(0, 12)
-Write-Status ("LD Capital / LDX archive migration  run={0}  mode={1}{2}" -f $runId, $Mode, $(if ($DryRun) { '  DRY-RUN' } else { '' })) White
+Write-Status ("LD Capital / LDX archive migration  run={0}  mode={1}{2}{3}" -f $runId, $Mode, $(if ($IndexOnly) { '  INDEX-ONLY' } else { '' }), $(if ($DryRun) { '  DRY-RUN' } else { '' })) White
 
 # --- destination
 if (-not $Destination) {
@@ -585,8 +600,20 @@ if ($DryRun) {
 
 # --- collect candidates
 $candidates = New-Object System.Collections.Generic.List[object]
+$repos = New-Object 'System.Collections.Generic.Dictionary[string,string]' ([System.StringComparer]::OrdinalIgnoreCase)
 
-foreach ($src in $SourcePath) {
+if ($IndexOnly) {
+    Write-Status "Index-only: adopting every file already under $Destination" Gray
+    $SourcePath = @($Destination)
+    $found = @(Get-CandidateFiles -Root $Destination -Origin 'index' -AllInScope -Filter {
+        param($fi, $rel)
+        -not (($rel -notmatch '[\\/]') -and ($script:ControlFiles -contains $fi.Name))
+    })
+    Write-Status ("  {0} file(s) in place" -f $found.Count) Gray
+    foreach ($c in $found) { $candidates.Add($c) }
+}
+
+foreach ($src in $(if ($IndexOnly) { @() } else { $SourcePath })) {
     if (-not (Test-Path -LiteralPath $src -PathType Container)) {
         Write-Warning "Source not found, skipping: $src"
         continue
@@ -601,7 +628,7 @@ foreach ($src in $SourcePath) {
     foreach ($c in $found) { $candidates.Add($c) }
 }
 
-$repos = Find-LdxRepositories -Roots $RepoRoot -Explicit $Repo
+if (-not $IndexOnly) { $repos = Find-LdxRepositories -Roots $RepoRoot -Explicit $Repo }
 foreach ($repoPath in @($repos.Keys)) {
     if ((Add-TrailingSeparator $repoPath).StartsWith($destFull, $script:PathCompare)) { continue }
     $repoName = $repos[$repoPath]
@@ -623,7 +650,7 @@ foreach ($w in $work) { $needBytes += [long]$w.File.Length }
 Write-Status ("{0} unique file(s) to process, {1} total" -f $work.Count, (Format-Bytes $needBytes)) White
 
 # --- free space check
-if (-not $DryRun) {
+if (-not $DryRun -and -not $IndexOnly) {
     try {
         $driveInfo = New-Object System.IO.DriveInfo([System.IO.Path]::GetPathRoot($Destination))
         $free = [long]$driveInfo.AvailableFreeSpace
@@ -638,7 +665,7 @@ if (-not $DryRun) {
 
 # --- process
 $rows = New-Object System.Collections.Generic.List[object]
-$counts = [ordered]@{ Copied = 0; Moved = 0; Duplicate = 0; Archived = 0; Planned = 0; SkippedCloudOnly = 0; Failed = 0 }
+$counts = [ordered]@{ Copied = 0; Moved = 0; Duplicate = 0; Indexed = 0; Archived = 0; Planned = 0; SkippedCloudOnly = 0; Failed = 0 }
 $n = 0
 $total = $work.Count
 
@@ -647,8 +674,13 @@ foreach ($item in $work) {
     $fi = $item.File
     $rel = $item.Relative
     $isRepo = $item.Origin.StartsWith('repo:')
+    $isIndex = ($item.Origin -eq 'index')
 
-    if ($isRepo) {
+    if ($isIndex) {
+        $segs = @(Split-PathSegments $rel)
+        $category = if ($segs.Count -gt 1) { $segs[0] } else { '(root)' }
+        $archiveRel = $rel
+    } elseif ($isRepo) {
         $category = 'Repos'
         $archiveRel = Join-Path (Join-Path 'Repos' $item.Origin.Substring(5)) $rel
     } else {
@@ -692,6 +724,18 @@ foreach ($item in $work) {
 
         $srcHash = $null
         if (-not $NoHash) { $srcHash = Get-Sha256 $fi.FullName; $row.Sha256 = $srcHash }
+
+        if ($isIndex) {
+            $row.Status = 'Indexed'
+            $counts.Indexed++
+            Write-ChainLog @{
+                event = 'file'; run = $runId; status = 'Indexed'; category = $category
+                archive = $archiveRel; source = $fi.FullName; size = [long]$fi.Length
+                sha256 = $row.Sha256; lastWrite = $row.LastWrite
+            }
+            $rows.Add([pscustomobject]$row)
+            continue
+        }
 
         $resolved = Resolve-UniqueTarget -Target $target -SourceHash $srcHash -SourceLength $fi.Length -SourceWrite $fi.LastWriteTimeUtc
         $finalTarget = $resolved.Path
@@ -764,7 +808,7 @@ if (-not $DryRun -and (Test-Path -LiteralPath $manifestJson -PathType Leaf)) {
         $current = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
         foreach ($r in $rows) { [void]$current.Add([string]$r.ArchivePath) }
         foreach ($pf in @($prior.files)) {
-            if ($pf.Status -notin @('Copied', 'Moved', 'Duplicate')) { continue }
+            if ($pf.Status -notin @('Copied', 'Moved', 'Duplicate', 'Indexed')) { continue }
             if ($current.Contains([string]$pf.ArchivePath)) { continue }
             if (-not (Test-Path -LiteralPath (Join-Path $Destination $pf.ArchivePath) -PathType Leaf)) { continue }
             $rows.Add([pscustomobject][ordered]@{
@@ -784,7 +828,7 @@ if (-not $DryRun -and (Test-Path -LiteralPath $manifestJson -PathType Leaf)) {
         Write-Warning "Prior manifest.json could not be merged: $($_.Exception.Message)"
     }
 }
-$archivedRows = @($rows | Where-Object { $_.Status -in @('Copied', 'Moved', 'Duplicate', 'Planned', 'Archived') })
+$archivedRows = @($rows | Where-Object { $_.Status -in @('Copied', 'Moved', 'Duplicate', 'Indexed', 'Planned', 'Archived') })
 $archivedBytes = Get-SumBytes -Items $archivedRows -Property 'SizeBytes'
 $sortedRows = @($rows | Sort-Object Category, ArchivePath)
 
@@ -837,7 +881,7 @@ if ($priorityReport.Count) {
 # sha256sum-compatible digest list (verify on any platform with: sha256sum -c SHA256SUMS.txt)
 $sums = New-Object System.Text.StringBuilder
 foreach ($r in $sortedRows) {
-    if ($r.Status -in @('Copied', 'Moved', 'Duplicate', 'Archived') -and $r.Sha256) {
+    if ($r.Status -in @('Copied', 'Moved', 'Duplicate', 'Indexed', 'Archived') -and $r.Sha256) {
         [void]$sums.Append($r.Sha256).Append('  ').Append(([string]$r.ArchivePath).Replace('\', '/')).Append("`n")
     }
 }
@@ -883,7 +927,9 @@ Integrity
 Keep a second copy of this folder on cloud storage. The SHA-256 list is what makes the two copies
 provably identical.
 "@
-[System.IO.File]::WriteAllText((Join-Path $manifestDir 'README.txt'), $readme, $script:Utf8NoBom)
+if (-not ($IndexOnly -and (Test-Path -LiteralPath (Join-Path $manifestDir 'README.txt') -PathType Leaf))) {
+    [System.IO.File]::WriteAllText((Join-Path $manifestDir 'README.txt'), $readme, $script:Utf8NoBom)
+}
 
 $sortedRows | Export-Csv -LiteralPath $manifestCsv -NoTypeInformation -Encoding UTF8
 

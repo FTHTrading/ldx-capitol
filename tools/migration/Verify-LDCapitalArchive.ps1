@@ -22,7 +22,7 @@
 [CmdletBinding()]
 param(
     [string]$Archive,
-    [string]$ArchiveFolderName = "LD_Capital_Complete_Archive",
+    [string[]]$ArchiveFolderName = @("MASTER_LD_CAPITAL_AUDIT_VAULT", "LD_Capital_Complete_Archive"),
     [switch]$SkipLog
 )
 
@@ -49,12 +49,15 @@ if (-not $Archive) {
     if ($onWindows) {
         $removable = @(Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=2" -ErrorAction SilentlyContinue)
         foreach ($ld in $removable) {
-            $cand = Join-Path ($ld.DeviceID + '\') $ArchiveFolderName
-            if (Test-Path -LiteralPath (Join-Path $cand 'manifest.json')) { $Archive = $cand; break }
+            foreach ($name in $ArchiveFolderName) {
+                $cand = Join-Path ($ld.DeviceID + '\') $name
+                if (Test-Path -LiteralPath (Join-Path $cand 'manifest.json')) { $Archive = $cand; break }
+            }
+            if ($Archive) { break }
         }
     }
     if (-not $Archive) {
-        Write-Host "No archive found on a removable volume. Pass -Archive 'E:\$ArchiveFolderName'." -ForegroundColor Red
+        Write-Host "No archive found on a removable volume. Pass -Archive 'E:\$($ArchiveFolderName[0])'." -ForegroundColor Red
         exit 3
     }
 }
@@ -66,7 +69,7 @@ if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
 }
 
 $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-$files = @($manifest.files | Where-Object { $_.Status -in @('Copied', 'Moved', 'Duplicate', 'Archived') })
+$files = @($manifest.files | Where-Object { $_.Status -in @('Copied', 'Moved', 'Duplicate', 'Indexed', 'Archived') })
 Write-Host ("Verifying {0} archived file(s) from run {1} ({2})" -f $files.Count, $manifest.runId, $manifest.generated) -ForegroundColor White
 
 $ok = 0; $missing = @(); $modified = @(); $unhashed = 0

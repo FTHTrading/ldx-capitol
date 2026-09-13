@@ -42,7 +42,7 @@
 [CmdletBinding()]
 param(
     [string]$Archive,
-    [string]$ArchiveFolderName = "LD_Capital_Complete_Archive",
+    [string[]]$ArchiveFolderName = @("MASTER_LD_CAPITAL_AUDIT_VAULT", "LD_Capital_Complete_Archive"),
     [string]$Collection = "LD Capital Complete Archive",
     [string]$OutputDir,
     [string]$VerifyProof,
@@ -150,11 +150,14 @@ if (-not $Archive) {
     if ($onWindows) {
         $removable = @(Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=2" -ErrorAction SilentlyContinue)
         foreach ($ld in $removable) {
-            $cand = Join-Path ($ld.DeviceID + '\') $ArchiveFolderName
-            if (Test-Path -LiteralPath (Join-Path $cand 'manifest.json')) { $Archive = $cand; break }
+            foreach ($name in $ArchiveFolderName) {
+                $cand = Join-Path ($ld.DeviceID + '\') $name
+                if (Test-Path -LiteralPath (Join-Path $cand 'manifest.json')) { $Archive = $cand; break }
+            }
+            if ($Archive) { break }
         }
     }
-    if (-not $Archive) { Write-Host "No archive found on a removable volume. Pass -Archive 'E:\$ArchiveFolderName'." -ForegroundColor Red; exit 3 }
+    if (-not $Archive) { Write-Host "No archive found on a removable volume. Pass -Archive 'E:\$($ArchiveFolderName[0])'." -ForegroundColor Red; exit 3 }
 }
 $Archive = [System.IO.Path]::GetFullPath($Archive)
 if (-not $OutputDir) { $OutputDir = $Archive }
@@ -206,7 +209,7 @@ if ($VerifyProof -or $VerifyAll) {
 
 # --- build
 $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-$rows = @($manifest.files | Where-Object { $_.Status -in @('Copied', 'Moved', 'Duplicate', 'Archived') -and $_.Sha256 })
+$rows = @($manifest.files | Where-Object { $_.Status -in @('Copied', 'Moved', 'Duplicate', 'Indexed', 'Archived') -and $_.Sha256 })
 $byPath = @{}
 foreach ($r in $rows) {
     $key = ([string]$r.ArchivePath).Replace('\', '/')
