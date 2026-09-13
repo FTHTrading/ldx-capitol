@@ -60,6 +60,15 @@
 .PARAMETER NoHash
     Skip SHA-256 (size + timestamp verification only). Not recommended for Move.
 
+.PARAMETER Preset
+    MachineSweep: sweep the whole user profile (Desktop, Documents, Downloads, every OneDrive folder, dev/source/
+    repos and client folders) instead of the default download tree, with AppData and package caches excluded, and
+    land the result under <Destination>\09_MACHINE_ONE_SWEEP_<stamp>\<Category>\... . Combine with -CaseFile to
+    add the case search terms to the scope patterns. Copy mode only; nothing is deleted.
+
+.PARAMETER CaseFile
+    Optional case.json (see case\README.md). Its searchTerms are added, escaped, to -Pattern.
+
 .PARAMETER IndexOnly
     Adopt an existing archive in place: no sources are read or copied. Every file already under -Destination
     is hashed and recorded (Status "Indexed", Category = its top-level folder) so manifest.json, SHA256SUMS.txt
@@ -145,11 +154,42 @@ param(
 
     [switch]$IndexOnly,
 
+    [ValidateSet('None', 'MachineSweep')]
+    [string]$Preset = 'None',
+
+    [string]$CaseFile,
+
     [switch]$DryRun
 )
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
+
+# --- presets and case terms (applied before anything is compiled)
+if ($CaseFile) {
+    if (-not (Test-Path -LiteralPath $CaseFile -PathType Leaf)) { Write-Host "Case file not found: $CaseFile" -ForegroundColor Red; exit 3 }
+    $caseObj = Get-Content -LiteralPath $CaseFile -Raw | ConvertFrom-Json
+    $caseTerms = @($caseObj.PSObject.Properties['searchTerms'].Value | Where-Object { $_ })
+    foreach ($t in $caseTerms) { $Pattern += [regex]::Escape([string]$t).Replace('\ ', '[ _\-]?') }
+}
+if ($Preset -eq 'MachineSweep') {
+    if ($Mode -ne 'Copy') { Write-Host "MachineSweep runs in Copy mode only; deletion is a separate, deliberate step." -ForegroundColor Red; exit 3 }
+    $profileRoot = if ($env:USERPROFILE) { $env:USERPROFILE } else { $HOME }
+    if (-not $PSBoundParameters.ContainsKey('SourcePath')) {
+        $SourcePath = @()
+        foreach ($sub in @('Desktop', 'Documents', 'Downloads', 'Videos', 'Pictures', 'dev', 'source', 'repos', 'src', 'projects', 'Client_Deals', 'legal-repo')) {
+            $p = Join-Path $profileRoot $sub
+            if (Test-Path -LiteralPath $p -PathType Container) { $SourcePath += $p }
+        }
+        foreach ($od in @(Get-ChildItem -LiteralPath $profileRoot -Directory -Force -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'OneDrive*' })) { $SourcePath += $od.FullName }
+    }
+    $ExcludeDir += @('AppData', 'Application Data', '.nuget', '.cargo', '.rustup', '.npm', '.gradle', '.m2', 'Packages', 'WindowsApps', '$RECYCLE.BIN', 'System Volume Information')
+    $Pattern += @('BitGo', 'FalconX', 'PAXG', 'LDCRE', 'Edelweiss', 'Loan[ _\-]?Depot', 'Waterpark', 'Persona')
+    if (-not $PSBoundParameters.ContainsKey('ArchiveFolderName')) { $ArchiveFolderName = 'MASTER_LD_CAPITAL_AUDIT_VAULT' }
+    $script:SweepSubfolder = '09_MACHINE_ONE_SWEEP_' + (Get-Date).ToString('yyyyMMdd-HHmm')
+} else {
+    $script:SweepSubfolder = $null
+}
 
 # ---------------------------------------------------------------------------------------------------------
 # Environment helpers
@@ -258,6 +298,7 @@ function Confirm-Directory {
     [void][System.IO.Directory]::CreateDirectory($Path)
 }
 
+function ConvertTo-Iso { param($v) if ($v -is [datetime]) { return $v.ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ') }; if ($null -eq $v) { return '' }; return [string]$v }
 function Get-SumBytes {
     param([object[]]$Items, [string]$Property)
     $sum = [long]0
@@ -582,6 +623,7 @@ if (-not $Destination) {
     }
     $Destination = Join-Path $root $ArchiveFolderName
 }
+if ($script:SweepSubfolder) { $Destination = Join-Path $Destination $script:SweepSubfolder }
 $Destination = Get-FullPath $Destination
 $destFull = Add-TrailingSeparator $Destination
 
@@ -818,7 +860,7 @@ if (-not $DryRun -and (Test-Path -LiteralPath $manifestJson -PathType Leaf)) {
                 SourcePath  = [string]$pf.SourcePath
                 Origin      = [string]$pf.Origin
                 SizeBytes   = [long]$pf.SizeBytes
-                LastWrite   = [string]$pf.LastWrite
+                LastWrite   = (ConvertTo-Iso $pf.LastWrite)
                 Sha256      = [string]$pf.Sha256
                 Note        = ('archived in run ' + [string]$prior.runId)
             })

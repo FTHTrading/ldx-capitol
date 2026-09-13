@@ -11,6 +11,58 @@ and an append-only chained log. Windows PowerShell 5.1 and PowerShell 7 are both
 | `Build-LDCapitalMerkle.ps1` | Merkle tree over the manifest: root, per-file inclusion proofs, XRPL anchor payload |
 | `anchor/xrpl-anchor.mjs` | Anchor the root on the XRP Ledger behind an explicit `--yes` gate; verify an anchor later |
 | `Mirror-LDCapitalArchive.ps1` | Byte-verified second copy of the whole archive, tree preserved, to a sync folder, NAS or second drive |
+| `Export-LDCapitalM365Evidence.ps1` | Microsoft 365 evidence export under your own login: raw `.eml` with headers, everything you shared out and to whom, everything shared with you, SharePoint hits |
+| `New-LDCapitalCaseReport.ps1` | Dated case breakdown from the vault: what we have, what they have, workstreams, contacts, timeline, plus CRM-ready contact and activity CSVs |
+
+## Investigator runbook (existing vault on `D:\`)
+
+Every step is copy-only and hash-verified. Nothing on `C:\` is deleted by any of these scripts.
+
+```powershell
+cd <clone>\tools\migration
+# 0. One-time: case terms, counterparty and own domains, workstream regexes. Lives in case\ (git-ignored).
+notepad .\case\case.json            # template in case\README.md
+Install-Module Microsoft.Graph.Authentication -Scope CurrentUser
+
+# 1. Hash the vault as it stands, then make the second copy before anything else touches the stick.
+powershell -ExecutionPolicy Bypass -File .\Migrate-LDCapitalArchive.ps1 -Destination "D:\MASTER_LD_CAPITAL_AUDIT_VAULT" -IndexOnly
+powershell -ExecutionPolicy Bypass -File .\Mirror-LDCapitalArchive.ps1 -Archive "D:\MASTER_LD_CAPITAL_AUDIT_VAULT" -Mirror "<second location>"
+
+# 2. Sweep the whole machine for anything still on C:\ (profile, every OneDrive folder, dev/source/client folders).
+#    Lands under D:\MASTER_LD_CAPITAL_AUDIT_VAULT\09_MACHINE_ONE_SWEEP_<stamp>\<Category>\... . Dry-run first.
+powershell -ExecutionPolicy Bypass -File .\Migrate-LDCapitalArchive.ps1 -Preset MachineSweep -CaseFile .\case\case.json -Destination "D:\MASTER_LD_CAPITAL_AUDIT_VAULT" -DryRun
+powershell -ExecutionPolicy Bypass -File .\Migrate-LDCapitalArchive.ps1 -Preset MachineSweep -CaseFile .\case\case.json -Destination "D:\MASTER_LD_CAPITAL_AUDIT_VAULT"
+
+# 3. Microsoft 365: raw mail (headers + DKIM + attachments), shares out, shares in, SharePoint hits.
+#    Device-code sign-in with your own account; read-only scopes. Lands under 09_M365_EXPORT_<stamp>\.
+powershell -ExecutionPolicy Bypass -File .\Export-LDCapitalM365Evidence.ps1 -Vault "D:\MASTER_LD_CAPITAL_AUDIT_VAULT"
+
+# 4. Re-index so the sweep and the export are hashed and logged, then the breakdown.
+powershell -ExecutionPolicy Bypass -File .\Migrate-LDCapitalArchive.ps1 -Destination "D:\MASTER_LD_CAPITAL_AUDIT_VAULT" -IndexOnly
+powershell -ExecutionPolicy Bypass -File .\New-LDCapitalCaseReport.ps1 -Archive "D:\MASTER_LD_CAPITAL_AUDIT_VAULT"
+
+# 5. Seal: re-index once more so 10_CASE_BREAKDOWN is covered, Merkle root, anchor, mirror again.
+powershell -ExecutionPolicy Bypass -File .\Migrate-LDCapitalArchive.ps1 -Destination "D:\MASTER_LD_CAPITAL_AUDIT_VAULT" -IndexOnly
+powershell -ExecutionPolicy Bypass -File .\Build-LDCapitalMerkle.ps1 -Archive "D:\MASTER_LD_CAPITAL_AUDIT_VAULT" -Collection "MASTER_LD_CAPITAL_AUDIT_VAULT"
+powershell -ExecutionPolicy Bypass -File .\Mirror-LDCapitalArchive.ps1 -Archive "D:\MASTER_LD_CAPITAL_AUDIT_VAULT" -Mirror "<second location>"
+```
+
+What `10_CASE_BREAKDOWN\` contains:
+
+| File | Content |
+|---|---|
+| `CASE_BREAKDOWN.md` | Integrity record, vault inventory by folder with date ranges, what they have, workstream table, contacts, full timeline. Every row cites a path + SHA-256 or a Message-ID + `.eml`. |
+| `CASE_TIMELINE.csv` | Every dated event: email, file, share out, share in, integrity |
+| `WHAT_WE_HAVE.csv` | Vault inventory with hashes and workstream tags |
+| `WHAT_THEY_HAVE.csv` | OneDrive shares granted to counterparty addresses or anonymous links, plus attachments emailed to them |
+| `CRM_CONTACTS.csv` | One row per address: name, company, side (us / counterparty / third party), first and last contact, message counts, workstreams |
+| `CRM_ACTIVITIES.csv` | One row per email or share, with contacts, workstream, attachment flag and reference. Imports directly into HubSpot, Pipedrive or a custom CRM. |
+
+Limits worth knowing: the M365 export sees what your account sees. Files inside the counterparty's own tenant
+that were never shared with you are not visible and cannot be enumerated from your side; what you get for
+"their Microsoft" is every item you shared to them (with link scope, roles and expiry), every item they shared to
+you, and every message exchanged. The dossier written by another tool is a derivative; the `.eml` files are the
+originals and the report cites those.
 
 ## Adopting an archive that already exists
 
