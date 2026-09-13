@@ -15,6 +15,8 @@ Institutional commercial real estate credit across traditional and tokenized cap
 | [`app/`](./app/) | Installable PWA — credit-engine deal evaluator, stress suite, pipeline, copilot |
 | [`pdfs/`](./pdfs/) | Print-ready client docs (HTML → Print → Save as PDF): program charts, RWA briefing, Centrifuge/a qualified custodian blueprint |
 | [`icons/`](./icons/) | LDX brand marks (SVG + PNG) used across the site and PWA |
+| [`tools/migration/`](./tools/migration/) | Operator tooling (not published): vault migration, integrity, Merkle root and XRPL anchor, M365 evidence export, case breakdown |
+| [`tools/workstation/`](./tools/workstation/) | Operator tooling (not published): workstation audit, canonical layout planner with chained move log, developer docs index |
 
 ## The app
 

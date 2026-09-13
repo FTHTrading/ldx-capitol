@@ -1,0 +1,15 @@
+{
+  "name": "ldx-archive-anchor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Anchor the LD Capital / LDX archive Merkle root on the XRP Ledger and verify it later.",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "anchor": "node xrpl-anchor.mjs",
+    "test": "node xrpl-anchor.mjs selftest"
+  },
+  "dependencies": {
+    "xrpl": "5.2.0"
+  }
+}
